@@ -1,10 +1,11 @@
 use std::process::Command;
 use enquote;
+use std::error::Error;
 
 /// args - NONE
 /// return Result<String, Box<error>
 /// Purpose - Get's path of the current wallpaper
-pub fn get_wallpaper() -> Result<String,  Box<dyn std::error::Error>>{
+pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
     let op =   Command::new("dconf")
     .arg("read")
     .arg("/org/cinnamon/desktop/background/picture-uri")
@@ -16,14 +17,12 @@ pub fn get_wallpaper() -> Result<String,  Box<dyn std::error::Error>>{
 
 
 /// args - None
-/// return <Result, str>
+/// return <Result, Error>
 /// Purpose - get the current envt
-pub fn get_envt<'a>() -> Result<String, &'a str> {
-    match std::env::var("XDG_CURRENT_DESKTOP") {
-        Ok(desktop) => Ok(desktop),
-        Err(_) => return Err("Could not find desktop"),
+pub fn get_envt() -> Result<String, Box<dyn Error>> {
 
-    }
+    Ok(std::env::var("XDG_CURRENT_DESKTOP")?)
+
 }
 
 /// args - filepath
@@ -40,4 +39,29 @@ pub fn set_paper (path : &str) -> Result<(), &'static str>  {
         }
 
 
+}
+
+// TESTS
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_envt() {
+        assert!(get_envt().is_ok());
+    }
+
+
+    #[test]
+    fn test_get_wallpaper() {
+
+        assert!(get_wallpaper().is_ok());
+    }
+
+    #[test]
+    fn test_set_wallpaper() {
+        // let t = get_envt();
+        let  path = "file:///home/vineet/Desktop/69561.jpg";
+        assert!(set_paper(path).is_ok());
+    }
 }
