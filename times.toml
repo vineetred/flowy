@@ -1,14 +1,28 @@
 times = [
-    "16:52",
-    "16:52:30",
-    "16:53",
-    "16:53:30",
-    "16:54",
+    "00:00",
+    "02:00",
+    "04:00",
+    "06:00",
+    "08:00",
+    "10:00",
+    "12:00",
+    "14:00",
+    "16:00",
+    "18:04",
+    "20:00",
+    "22:00",
 ]
-
 walls = [
     "file:///home/vineet/Downloads/walls/0.jpg",
     "file:///home/vineet/Downloads/walls/1.jpg",
     "file:///home/vineet/Downloads/walls/2.jpg",
     "file:///home/vineet/Downloads/walls/3.jpg",
-    "file:///home/vineet/Downloads/walls/4.jpg,"]
+    "file:///home/vineet/Downloads/walls/4.jpg",
+    "file:///home/vineet/Downloads/walls/5.jpg",
+    "file:///home/vineet/Downloads/walls/6.jpg",
+    "file:///home/vineet/Downloads/walls/7.jpg",
+    "file:///home/vineet/Downloads/walls/8.jpg",
+    "file:///home/vineet/Downloads/walls/9.jpg",
+    "file:///home/vineet/Downloads/walls/10.jpg",
+    "file:///home/vineet/Downloads/walls/11.jpg",
+]

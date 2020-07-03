@@ -7,7 +7,7 @@ use std::time::Duration;
 use toml;
 use serde::Deserialize;
 
-/// Stores the times as a vector of strings
+/// Stores the times and filepaths as a vector of strings
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub times : Vec<String>,
@@ -54,8 +54,7 @@ pub fn set_paper (path : &str) -> Result<(), &'static str>  {
 }
 
 pub fn set_times () {
-    
-    let config = get_config("times.toml");
+    let config = get_config("/home/vineet/Desktop/Dev/awstools/times.toml");
     let walls = config.walls;
     let times = config.times;
     let mut scheduler = Scheduler::new();
@@ -66,7 +65,7 @@ pub fn set_times () {
     }
     loop {
         scheduler.run_pending();
-        thread::sleep(Duration::from_millis(10));
+        thread::sleep(Duration::from_millis(600000));
     }
 }
 
