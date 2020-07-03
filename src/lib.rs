@@ -12,6 +12,7 @@ use serde::Deserialize;
 pub struct Config {
     pub times : Vec<String>,
     pub walls : Vec<String>,
+    pub fixed : bool,
 }
 
 
