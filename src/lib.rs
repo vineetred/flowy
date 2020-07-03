@@ -12,7 +12,6 @@ use serde::Deserialize;
 pub struct Config {
     pub times : Vec<String>,
     pub walls : Vec<String>,
-    pub fixed : bool,
 }
 
 
@@ -41,40 +40,41 @@ pub fn get_envt() -> Result<String, Box<dyn Error>> {
 /// args - filepath
 /// return - Result<(), str>
 /// purpose - set's the wallpaper to filepath
-pub fn set_paper (path : &str) -> Result<(), &'static str>  {
+pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
 
     let path = enquote::enquote('"', &format!("{}", path));
-    match Command::new("dconf")
+     Command::new("dconf")
         .args(&["write", "/org/cinnamon/desktop/background/picture-uri",&path])
-        .output() {
-            Ok(_) => Ok(()),
-            Err(_) => Err("Error changing paper"),
-        }
-
+        .output()?;
+        
+        Ok(())
 
 }
 
+// TODO - Someday, add some Result error return here
 pub fn set_times () {
-    let config = get_config("/home/vineet/Desktop/Dev/awstools/times.toml");
+    let config = get_config("/home/vineet/Desktop/Dev/awstools/times.toml").unwrap();
     let walls = config.walls;
     let times = config.times;
     let mut scheduler = Scheduler::new();
     for (i, time) in times.into_iter().enumerate() {
         // Workaround becase Rust was being a bitch
         let wall = walls[i].clone();
+        // println!("{}",time);
         scheduler.every(1.day()).at(&time).run(move|| set_paper(&wall).unwrap());
     }
     loop {
         scheduler.run_pending();
-        thread::sleep(Duration::from_millis(600000));
+        thread::sleep(Duration::from_millis(1000));
     }
 }
 
 
-pub fn get_config(path : &str) -> Config {
-    let toml_file = std::fs::read_to_string(path).unwrap();
-    let toml_data : Config = toml::from_str(&toml_file).unwrap();
-    toml_data
+pub fn get_config(path : &str) -> Result<Config, Box<dyn Error>> {
+    let toml_file = std::fs::read_to_string(path)?;
+    let toml_data : Config = toml::from_str(&toml_file)?;
+
+    Ok(toml_data)
 }
 
 
