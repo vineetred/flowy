@@ -8,3 +8,6 @@ edition = "2018"
 
 [dependencies]
 enquote = "1.0.3"
+toml = "0.5"
+clokwerk = "0.3.0"
+serde = { version = "1.0.114", features = ["derive"] }

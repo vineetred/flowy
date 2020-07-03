@@ -1,6 +1,19 @@
 use std::process::Command;
 use enquote;
 use std::error::Error;
+use clokwerk::{Scheduler, TimeUnits};
+use std::thread;
+use std::time::Duration;
+use toml;
+use serde::Deserialize;
+
+/// Stores the times as a vector of strings
+#[derive(Debug, Deserialize)]
+pub struct Config {
+    pub times : Vec<String>,
+    pub walls : Vec<String>,
+}
+
 
 /// args - NONE
 /// return Result<String, Box<error>
@@ -14,7 +27,6 @@ pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
     return  Ok(enquote::unquote(String::from_utf8(op.stdout)?.trim().into())?)
 
     }
-
 
 /// args - None
 /// return <Result, Error>
@@ -40,6 +52,35 @@ pub fn set_paper (path : &str) -> Result<(), &'static str>  {
 
 
 }
+
+pub fn set_times () {
+    
+    let config = get_config("times.toml");
+    let walls = config.walls;
+    let times = config.times;
+    let mut scheduler = Scheduler::new();
+    for (i, time) in times.into_iter().enumerate() {
+        // Workaround becase Rust was being a bitch
+        let wall = walls[i].clone();
+        scheduler.every(1.day()).at(&time).run(move|| set_paper(&wall).unwrap());
+    }
+    loop {
+        scheduler.run_pending();
+        thread::sleep(Duration::from_millis(10));
+    }
+}
+
+
+pub fn get_config(path : &str) -> Config {
+    let toml_file = std::fs::read_to_string(path).unwrap();
+    let toml_data : Config = toml::from_str(&toml_file).unwrap();
+    toml_data
+}
+
+
+
+
+
 
 // TESTS
 #[cfg(test)]

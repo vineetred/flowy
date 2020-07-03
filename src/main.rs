@@ -1,10 +1,10 @@
 
 fn main() {
-    let  path = "file:///home/vineet/Desktop/69561.jpg";
-    // println!("{}",path);
-    // paper_switch::set_paper(path);
-    let op = paper_switch::get_envt().unwrap();
-    // println!("{:?}", paper_switch::get_envt());
-    println!("{}",op)
 
+    // let config = paper_switch::get_config("times.toml");
+    // // 
+    // let walls: Vec<&str> = config.walls.iter().map(|x| &**x).collect();
+    // let times: Vec<&str> = config.times.iter().map(|x| &**x).collect();
+    
+    paper_switch::set_times();
 }

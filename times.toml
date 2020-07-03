@@ -1,0 +1,14 @@
+times = [
+    "16:52",
+    "16:52:30",
+    "16:53",
+    "16:53:30",
+    "16:54",
+]
+
+walls = [
+    "file:///home/vineet/Downloads/walls/0.jpg",
+    "file:///home/vineet/Downloads/walls/1.jpg",
+    "file:///home/vineet/Downloads/walls/2.jpg",
+    "file:///home/vineet/Downloads/walls/3.jpg",
+    "file:///home/vineet/Downloads/walls/4.jpg,"]
