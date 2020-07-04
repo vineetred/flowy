@@ -2,7 +2,9 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![crates.io](https://img.shields.io/crates/v/flowy.svg) ![Build Flowy](https://github.com/vineetred/flowy/workflows/Build%20Flowy/badge.svg?branch=master)
 
 ## Demo
-![](https://github.com/vineetred/flowy/blob/master/demo.gif)
+<p align="center">
+  <img src="https://github.com/vineetred/flowy/blob/master/demo.gif?raw=true" alt="Flowy demo"/>
+</p>
 
 ## Usage
 * You can either download the binary or get the Debian package.
