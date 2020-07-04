@@ -1,5 +1,5 @@
 
-name: Test and build ppbert
+name: Build Flowy
 
 on: push
 
