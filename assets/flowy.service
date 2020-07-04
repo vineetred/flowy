@@ -2,7 +2,7 @@
 Description=Flowy
 
 [Service]
-ExecStart=/usr/bin/flowy
+ExecStart=/usr/bin/flowy --dir=REPLACEME
 
 [Install]
 WantedBy=multi-user.target

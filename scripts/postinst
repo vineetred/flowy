@@ -1,0 +1,5 @@
+#!/bin/bash -ex
+echo enter dir
+read var1
+echo done
+sed -i "s|REPLACEME|$var1|g" etc/systemd/user/flowy.service

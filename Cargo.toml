@@ -31,3 +31,4 @@ assets = [
     ["assets/flowy.service", "etc/systemd/user/", "644"],
     ["target/release/flowy", "usr/bin/", "755"],
 ]
+maintainer-scripts = "scripts/"
