@@ -1,0 +1,8 @@
+[Unit]
+Description=Flowy
+
+[Service]
+ExecStart=/usr/bin/flowy
+
+[Install]
+WantedBy=multi-user.target

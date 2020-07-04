@@ -52,7 +52,7 @@ pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
 
 // TODO - Someday, add some Result error return here
 pub fn set_times () {
-    let config = get_config("/home/vineet/Desktop/Dev/awstools/times.toml").unwrap();
+    let config = get_config("times.toml").unwrap();
     let walls = config.walls;
     let times = config.times;
     println!("Times - {:#?}", &times);

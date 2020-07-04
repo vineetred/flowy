@@ -17,3 +17,16 @@ enquote = "1.0.3"
 toml = "0.5"
 clokwerk = "0.3.0"
 serde = { version = "1.0.114", features = ["derive"] }
+
+[package.metadata.deb]
+maintainer = "Vineet Reddy <vineetreddy@live.com>"
+license-file = ["LICENSE", "3"]
+depends = "$auto, systemd"
+extended-description = """\
+A dynamic desktop wallpaper changer that is written in the memory-safe programming language, Rust."""
+section = "admin"
+priority = "optional"
+assets = [
+    ["assets/flowy.service", "etc/systemd/user/", "644"],
+    ["target/debug/flowy", "usr/bin/", "755"],
+]
