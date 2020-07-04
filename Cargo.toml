@@ -28,5 +28,5 @@ section = "admin"
 priority = "optional"
 assets = [
     ["assets/flowy.service", "etc/systemd/user/", "644"],
-    ["target/debug/flowy", "usr/bin/", "755"],
+    ["target/release/flowy", "usr/bin/", "755"],
 ]

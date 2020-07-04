@@ -94,24 +94,26 @@ pub fn get_dir (path : &str) -> Result<Vec<String>, Box<dyn Error>> {
     // Sorted so that the images are viewed at the right time
     // Naming Mechanism - 00, 01, 02..
     files.sort();
-    println!("{:?}", files);
+    // println!("{:?}", files);
     Ok(files)
 }
 
 pub fn generate_config (path : &str) -> Result<(), Box<dyn Error>>{
     let files = get_dir(path)?;
     let length = files.len();
-    let div = 86400/length;
+    let div = 1440/length;
     let mut times = Vec::new();
-    let mut start_hour = 0;
-    let mut start_min = 0;
+    // let mut start_hour = 0;
+    // let mut start_min = 0;
     let mut start_sec = 0;
-
+    println!("{}",length);
     for _ in 0..length {
-       times.push(format!("{}:{}:{}",start_hour, start_min,start_sec ));
-       start_hour = start_hour+div/3600;
-       start_min = start_min + (div%3600)/60;
-       start_sec+=(div % 3600) % 60;
+       times.push(format!("{}:{}",start_sec/60, start_sec%60 ));
+       start_sec+=div;
+    //    start_hour = start_hour+div/3600;
+    //    start_min = start_min + (div%3600)/60;
+    //    start_sec+=(div % 3600) % 60;
+        
     }
 
     let file = Config {
