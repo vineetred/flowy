@@ -17,6 +17,7 @@ enquote = "1.0.3"
 toml = "0.5"
 clokwerk = "0.3.0"
 serde = { version = "1.0.114", features = ["derive"] }
+clap = { version = "3.0.0-beta.1", features = ["yaml"] }
 
 [package.metadata.deb]
 maintainer = "Vineet Reddy <vineetreddy@live.com>"

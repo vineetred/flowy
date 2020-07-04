@@ -51,6 +51,7 @@ pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
 }
 
 // TODO - Someday, add some Result error return here
+/// The main function that reads the config and runs the daemon
 pub fn set_times () {
     let config = get_config("times.toml").unwrap();
     let walls = config.walls;
@@ -61,7 +62,6 @@ pub fn set_times () {
     for (i, time) in times.into_iter().enumerate() {
         // Workaround becase Rust was being a bitch
         let wall = walls[i].clone();
-        // println!("{}",time);
         scheduler.every(1.day()).at(&time).run(move|| set_paper(&wall).unwrap());
     }
     loop {
@@ -74,7 +74,7 @@ pub fn set_times () {
 pub fn get_config(path : &str) -> Result<Config, Box<dyn Error>> {
     let toml_file = std::fs::read_to_string(path)?;
     let toml_data : Config = toml::from_str(&toml_file)?;
-
+    
     Ok(toml_data)
 }
 
@@ -94,26 +94,19 @@ pub fn get_dir (path : &str) -> Result<Vec<String>, Box<dyn Error>> {
     // Sorted so that the images are viewed at the right time
     // Naming Mechanism - 00, 01, 02..
     files.sort();
-    // println!("{:?}", files);
     Ok(files)
 }
 
+/// Generates the config file. Takes the wallpaper folder path as args.
 pub fn generate_config (path : &str) -> Result<(), Box<dyn Error>>{
     let files = get_dir(path)?;
     let length = files.len();
     let div = 1440/length;
     let mut times = Vec::new();
-    // let mut start_hour = 0;
-    // let mut start_min = 0;
     let mut start_sec = 0;
-    println!("{}",length);
     for _ in 0..length {
        times.push(format!("{}:{}",start_sec/60, start_sec%60 ));
        start_sec+=div;
-    //    start_hour = start_hour+div/3600;
-    //    start_min = start_min + (div%3600)/60;
-    //    start_sec+=(div % 3600) % 60;
-        
     }
 
     let file = Config {
@@ -123,7 +116,6 @@ pub fn generate_config (path : &str) -> Result<(), Box<dyn Error>>{
 
     let toml_string = toml::to_string(&file)?;
     std::fs::write("times.toml", toml_string)?;
-    println!("Success");
     Ok(())
 }
 
