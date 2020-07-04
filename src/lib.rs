@@ -5,10 +5,10 @@ use clokwerk::{Scheduler, TimeUnits};
 use std::thread;
 use std::time::Duration;
 use toml;
-use serde::Deserialize;
+use serde::{Serialize,Deserialize};
 
 /// Stores the times and filepaths as a vector of strings
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub times : Vec<String>,
     pub walls : Vec<String>,
@@ -46,7 +46,6 @@ pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
      Command::new("dconf")
         .args(&["write", "/org/cinnamon/desktop/background/picture-uri",&path])
         .output()?;
-        
         Ok(())
 
 }
@@ -56,6 +55,8 @@ pub fn set_times () {
     let config = get_config("/home/vineet/Desktop/Dev/awstools/times.toml").unwrap();
     let walls = config.walls;
     let times = config.times;
+    println!("Times - {:#?}", &times);
+    println!("Paths - {:#?}", &walls);
     let mut scheduler = Scheduler::new();
     for (i, time) in times.into_iter().enumerate() {
         // Workaround becase Rust was being a bitch
@@ -69,7 +70,7 @@ pub fn set_times () {
     }
 }
 
-
+/// Creates a new instance of struct Config and returns it
 pub fn get_config(path : &str) -> Result<Config, Box<dyn Error>> {
     let toml_file = std::fs::read_to_string(path)?;
     let toml_data : Config = toml::from_str(&toml_file)?;
@@ -77,10 +78,52 @@ pub fn get_config(path : &str) -> Result<Config, Box<dyn Error>> {
     Ok(toml_data)
 }
 
+/// Returns the contents of a given dir 
+pub fn get_dir (path : &str) -> Result<Vec<String>, Box<dyn Error>> {
+    let mut files : Vec<String> = std::fs::read_dir(path)?.
+    into_iter().
+    map(|x| x.unwrap().path().display().to_string())
+    .collect();
 
+    // Appens file:// to the start of each item
+    files = files
+    .into_iter()
+    .map(|y| "file://".to_string() + &y)
+    .collect();
+    // The read_dir iterator returns in an arbitrary manner
+    // Sorted so that the images are viewed at the right time
+    // Naming Mechanism - 00, 01, 02..
+    files.sort();
+    println!("{:?}", files);
+    Ok(files)
+}
 
+pub fn generate_config (path : &str) -> Result<(), Box<dyn Error>>{
+    let files = get_dir(path)?;
+    let length = files.len();
+    let div = 86400/length;
+    let mut times = Vec::new();
+    let mut start_hour = 0;
+    let mut start_min = 0;
+    let mut start_sec = 0;
 
+    for _ in 0..length {
+       times.push(format!("{}:{}:{}",start_hour, start_min,start_sec ));
+       start_hour = start_hour+div/3600;
+       start_min = start_min + (div%3600)/60;
+       start_sec+=(div % 3600) % 60;
+    }
 
+    let file = Config {
+        times,
+        walls : files,
+    };
+
+    let toml_string = toml::to_string(&file)?;
+    std::fs::write("times.toml", toml_string)?;
+    println!("Success");
+    Ok(())
+}
 
 // TESTS
 #[cfg(test)]

@@ -1,6 +1,8 @@
-
 fn main() {
-    flowy::set_times();
-    // println!("{:?}",flowy::get_wallpaper());
-    // flowy::set_paper("file:///home/vineet/Downloads/walls/5.jpg").unwrap();
+        // The times are set by themselves
+        // Just supply the path and the TOML file is generated
+        flowy::generate_config("/home/vineet/Downloads/walls").unwrap();
+        // Runs forever
+        flowy::set_times();
+
 }
