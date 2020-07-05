@@ -12,7 +12,7 @@ fn main() {
                 Ok(_) => println!("Generated config file"),
                 Err(e) => eprintln!("Error generating config file: {}",e),
         }
-        // Runs forever
+        // // Runs forever
         flowy::set_times();
 
 }

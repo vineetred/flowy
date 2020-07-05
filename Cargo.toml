@@ -1,6 +1,6 @@
 [package]
 name = "flowy"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["vineetred <vineetreddy@live.com>"]
 edition = "2018"
 license = "GPL-3.0-or-later"
@@ -10,7 +10,8 @@ homepage = "https://github.com/vineetred/flowy"
 repository = "https://github.com/vineetred/flowy"
 categories = ["command-line-utilities"]
 exclude = [ 
-    "demo.gif"
+    "demo.gif", 
+    "demo2.gif"
 ]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

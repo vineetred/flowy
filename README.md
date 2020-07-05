@@ -13,6 +13,7 @@
 ## Usage
 * The documentation can be found at https://docs.rs/flowy.
 * You can either download the binary or get the Debian package.
+* If you want a good set of wallpapers to begin with, check out this [collection] (https://drive.google.com/file/d/1KPCWxo7kepEsiscPHDT1KuaUXvOgZXw7/view)
 
 ### Binary - Recommended
 * It can be either found in the Releases section or can be installed using Cargo by running the command ```cargo install flowy```.
