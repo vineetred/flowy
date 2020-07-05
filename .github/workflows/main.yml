@@ -16,22 +16,22 @@ jobs:
         name: flowy_linux_musl
         path: target/x86_64-unknown-linux-musl/release/flowy
 
-  release-macos:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - run: cargo build --release
-    - uses: actions/upload-artifact@v1
-      with:
-        name: flowy_macos
-        path: target/release/flowy
+  # release-macos:
+  #   runs-on: macos-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - run: cargo build --release
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: flowy_macos
+  #       path: target/release/flowy
 
-  release-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - run: cargo build --release
-    - uses: actions/upload-artifact@v1
-      with:
-        name: flowy_windows
-        path: target/release/flowy.exe
+  # release-windows:
+  #   runs-on: windows-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - run: cargo build --release
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: flowy_windows
+  #       path: target/release/flowy.exe

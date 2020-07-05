@@ -20,6 +20,11 @@
 * Once the installation is done, run the command ```systemctl --user start flowy.service``` to run the application.
 * Once installation is done and you would still like to change the directory, go to the systemd service file found at ```/etc/systemd/user``` and change the directory in that file.
 
+## Wallpapers directory
+* The wallpapers inside the directory must be named sequentially.
+* For example, if you have 11 wallpapers, the names must be ```paper-01.jpg, paper-02.jpg...```.
+* It does not matter what the names of the files are as long as they are sequential.
+
 ## Experimental
 * By default, flowy evenly sets the wallpaper change time based on the number of wallpapers there are. In case you would like to modify these times, it can be done so by editing the ```times.toml``` file found in the ```/home``` directory. You need to comment the ```flowy::generate_config``` function call in ```main.rs``` and then build it after modifying the config file.
 
