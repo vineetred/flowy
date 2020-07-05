@@ -30,7 +30,7 @@
 
 ## Supported Environments
 * MacOS
-* GNOME Based - Ubuntu, Fedora, Pantheon
+* **GNOME Based** - Ubuntu, Fedora, Pantheon
 * Linux Mint Cinnamon
 * Linux Mint MATE
 * Deepin
