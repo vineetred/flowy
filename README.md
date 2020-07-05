@@ -11,7 +11,7 @@
 * You can either download the binary or get the Debian package.
 
 ### Binary - Recommended
-* It can be either found in the Releases section or can be installed using Cargo by running the command ```flowy = "0.1.6"```.
+* It can be either found in the Releases section or can be installed using Cargo by running the command ```cargo install flowy```.
 * If you use the binary, just run it by typing ```flowy -d``` or ```flowy --dir``` to set the path to the wallpaper directory.
 * By using this method, you can either let the binary run forever in a terminal or setup a ```systemd``` service so it listens in the background.
 

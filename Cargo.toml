@@ -1,6 +1,6 @@
 [package]
 name = "flowy"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["vineetred <vineetreddy@live.com>"]
 edition = "2018"
 license = "GPL-3.0-or-later"
