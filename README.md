@@ -1,5 +1,5 @@
 # Flowy
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![crates.io](https://img.shields.io/crates/v/flowy.svg) ![Build Flowy](https://github.com/vineetred/flowy/workflows/Build%20Flowy/badge.svg?branch=master)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![crates.io](https://img.shields.io/crates/v/flowy.svg) ![Build Flowy](https://github.com/vineetred/flowy/workflows/Build%20Flowy/badge.svg?branch=master) ![Docs](https://docs.rs/flowy/badge.svg)
 
 ## Demo
 <p align="center">
@@ -7,11 +7,13 @@
 </p>
 
 ## Usage
+* The documentation can be found at https://docs.rs/flowy.
 * You can either download the binary or get the Debian package.
 
 ### Binary - Recommended
 * It can be either found in the Releases section or can be installed using Cargo by running the command ```flowy = "0.1.6"```.
 * If you use the binary, just run it by typing ```flowy -d``` or ```flowy --dir``` to set the path to the wallpaper directory.
+* By using this method, you can either let the binary run forever in a terminal or setup a ```systemd``` service so it listens in the background.
 
 ### Debian package
 * If you use the Debian package, then it will install flowy as a ```systemd``` service. During installation, flowy will ask you your directory. 
