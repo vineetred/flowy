@@ -21,14 +21,50 @@ fn is_gnome_compliant(desktop: &str) -> bool {
 /// args - NONE
 /// return Result<String, Box<error>
 /// Purpose - Get's path of the current wallpaper
-/// Works only for Mint Cinnamon
 pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
-    let op =   Command::new("dconf")
-    .arg("read")
-    .arg("/org/cinnamon/desktop/background/picture-uri")
-    .output()?;
 
-    return  Ok(enquote::unquote(String::from_utf8(op.stdout)?.trim().into())?)
+    let desktop = get_envt()?;
+
+    if is_gnome_compliant(&desktop) {
+        Command::new("gsettings")
+        .args(&["get", "org.gnome.desktop.background", "picture-uri"])
+        .output()?;
+    }
+
+    let output = match desktop.as_str() {
+        "X-Cinnamon" => {
+            Command::new("dconf")
+            .arg("read")
+            .arg("/org/cinnamon/desktop/background/picture-uri")
+            .output()?
+        },
+
+        "MATE" => {
+            Command::new("dconf")
+            .args(&["read", "/org/mate/desktop/background/picture-filename"])
+            .output()?
+
+        },
+
+        "XFCE" => {
+            Command::new("xfconf-query")
+            .args(&["-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/workspace0/last-image"])
+            .output()?         
+        },
+
+        "Deepin" => {
+            Command::new("dconf")
+            .args(&["read", "/com/deepin/wrap/gnome/desktop/background/picture-uri"])
+            .output()?
+        },
+        // Panics since flowy does not support others yet
+        _ => {
+            panic!("Unsupported Desktop Environment")
+        }
+    };
+    
+
+    return  Ok(enquote::unquote(String::from_utf8(output.stdout)?.trim().into())?)
 
     }
 

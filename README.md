@@ -39,3 +39,4 @@
 * GUI
 * Match the stars given the location
 * Add support for other platforms, both UNIX and Windows.
+* Refactor OS related code to another file
