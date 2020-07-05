@@ -14,6 +14,7 @@ pub struct Config {
     pub walls : Vec<String>,
 }
 /// Check if desktop is Gnome compliant
+#[cfg(target_os = "linux")]
 fn is_gnome_compliant(desktop: &str) -> bool {
     desktop.contains("GNOME") || desktop == "Unity" || desktop == "Pantheon"
 }
