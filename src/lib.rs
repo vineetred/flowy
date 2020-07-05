@@ -13,11 +13,15 @@ pub struct Config {
     pub times : Vec<String>,
     pub walls : Vec<String>,
 }
-
+/// Check if desktop is Gnome compliant
+fn is_gnome_compliant(desktop: &str) -> bool {
+    desktop.contains("GNOME") || desktop == "Unity" || desktop == "Pantheon"
+}
 
 /// args - NONE
 /// return Result<String, Box<error>
 /// Purpose - Get's path of the current wallpaper
+/// Works only for Mint Cinnamon
 pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
     let op =   Command::new("dconf")
     .arg("read")
@@ -38,14 +42,52 @@ pub fn get_envt() -> Result<String, Box<dyn Error>> {
 }
 
 /// args - filepath
-/// return - Result<(), str>
+/// return - Result<(), Error>
 /// purpose - set's the wallpaper to filepath
 pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
 
     let path = enquote::enquote('"', &format!("{}", path));
-     Command::new("dconf")
-        .args(&["write", "/org/cinnamon/desktop/background/picture-uri",&path])
+    // Getting desktop here
+    let desktop = get_envt()?;
+    // Checking if it is GNOME based
+    if is_gnome_compliant(&desktop) {
+        Command::new("gsettings")
+        .args(&["set", "org.gnome.desktop.background", "picture-uri", &path])
         .output()?;
+    }
+    match desktop.as_str() {
+        "X-Cinnamon" => {
+            Command::new("dconf")
+            .args(&["write", "/org/cinnamon/desktop/background/picture-uri",&path])
+            .output()?;
+        }
+
+        "MATE" => {
+            let mate_path = &path[7..];
+            Command::new("dconf")
+            .args(&["write", "/org/mate/desktop/background/picture-filename",&mate_path])
+            .output()?;
+
+        }
+
+        "XFCE" => {
+            let xfce_path = &path[7..];
+            Command::new("xfconf-query")
+            .args(&["-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/workspace0/last-image", "-s", &xfce_path])
+            .output()?;            
+        }
+
+        "Deepin" => {
+            Command::new("dconf")
+            .args(&["write", "/com/deepin/wrap/gnome/desktop/background/picture-uri",&path])
+            .output()?;
+        }
+        // Panics since flowy does not support others yet
+        _ => {
+            panic!("Unsupported Desktop Environment")
+        }
+    }
+     
         Ok(())
 
 }
@@ -117,29 +159,4 @@ pub fn generate_config (path : &str) -> Result<(), Box<dyn Error>>{
     let toml_string = toml::to_string(&file)?;
     std::fs::write("times.toml", toml_string)?;
     Ok(())
-}
-
-// TESTS
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_get_envt() {
-        assert!(get_envt().is_ok());
-    }
-
-
-    #[test]
-    fn test_get_wallpaper() {
-
-        assert!(get_wallpaper().is_ok());
-    }
-
-    #[test]
-    fn test_set_wallpaper() {
-        // let t = get_envt();
-        let  path = "file:///home/vineet/Desktop/69561.jpg";
-        assert!(set_paper(path).is_ok());
-    }
 }

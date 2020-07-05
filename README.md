@@ -23,6 +23,13 @@
 ## Experimental
 * By default, flowy evenly sets the wallpaper change time based on the number of wallpapers there are. In case you would like to modify these times, it can be done so by editing the ```times.toml``` file found in the ```/home``` directory. You need to comment the ```flowy::generate_config``` function call in ```main.rs``` and then build it after modifying the config file.
 
+## Supported Environments
+* GNOME Based - Ubuntu, Fedora, Pantheon
+* Linux Mint Cinnamon
+* Linux Mint MATE
+* Deepin
+* XFCE
+
 **TODO**
 * GUI
 * Match the stars given the location
