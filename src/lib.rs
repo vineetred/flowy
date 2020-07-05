@@ -21,6 +21,7 @@ fn is_gnome_compliant(desktop: &str) -> bool {
 /// args - NONE
 /// return Result<String, Box<error>
 /// Purpose - Get's path of the current wallpaper
+#[cfg(target_os = "linux")]
 pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
 
     let desktop = get_envt()?;
@@ -67,10 +68,21 @@ pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
     return  Ok(enquote::unquote(String::from_utf8(output.stdout)?.trim().into())?)
 
     }
-
+#[cfg(target_os = "macos")]
+pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
+    // Generate the Applescript string
+    let cmd =  r#"tell app "finder" to get posix path of (get desktop picture as alias)"#;
+    // Run it using osascript
+    let output = Command::new("osascript")
+    .args(&["-e", cmd,])
+    .output()?;
+ 
+    Ok(String::from_utf8(output.stdout)?.trim().into())
+}
 /// args - None
 /// return <Result, Error>
 /// Purpose - get the current envt
+#[cfg(target_os = "linux")]
 pub fn get_envt() -> Result<String, Box<dyn Error>> {
 
     Ok(std::env::var("XDG_CURRENT_DESKTOP")?)
@@ -80,6 +92,7 @@ pub fn get_envt() -> Result<String, Box<dyn Error>> {
 /// args - filepath
 /// return - Result<(), Error>
 /// purpose - set's the wallpaper to filepath
+#[cfg(target_os = "linux")]
 pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
 
     let path = enquote::enquote('"', &format!("{}", path));
@@ -128,6 +141,20 @@ pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
 
 }
 
+#[cfg(target_os = "macos")]
+pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>> {
+    // Generate the Applescript string
+    let cmd =  &format!(
+        r#"tell app "finder" to set desktop picture to POSIX file {}"#,
+        enquote::enquote('"', path),);
+    // Run it using osascript
+    Command::new("osascript")
+    .args(&["-e", cmd,])
+    .output()?;
+    
+    Ok(())
+
+}
 // TODO - Someday, add some Result error return here
 /// The main function that reads the config and runs the daemon
 pub fn set_times () {
@@ -164,10 +191,18 @@ pub fn get_dir (path : &str) -> Result<Vec<String>, Box<dyn Error>> {
     .collect();
 
     // Appens file:// to the start of each item
-    files = files
-    .into_iter()
-    .map(|y| "file://".to_string() + &y)
-    .collect();
+    if cfg!(target_os = "linux") {
+        files = files
+        .into_iter()
+        .map(|y| "file://".to_string() + &y)
+        .collect();
+    }
+
+    if cfg!(target_os = "macos") {
+        files = files
+        .into_iter()
+        .collect();
+    }
     // The read_dir iterator returns in an arbitrary manner
     // Sorted so that the images are viewed at the right time
     // Naming Mechanism - 00, 01, 02..

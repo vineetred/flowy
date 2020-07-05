@@ -13,7 +13,7 @@
 ### Binary - Recommended
 * It can be either found in the Releases section or can be installed using Cargo by running the command ```cargo install flowy```.
 * If you use the binary, just run it by typing ```flowy -d``` or ```flowy --dir``` to set the path to the wallpaper directory.
-* By using this method, you can either let the binary run forever in a terminal or setup a ```systemd``` service so it listens in the background.
+* If you're using Linux, you can either let the binary run forever in a terminal or setup a ```systemd``` service so it listens in the background.
 
 ### Debian package
 * If you use the Debian package, then it will install flowy as a ```systemd``` service. During installation, flowy will ask you your directory. 
@@ -29,6 +29,7 @@
 * By default, flowy evenly sets the wallpaper change time based on the number of wallpapers there are. In case you would like to modify these times, it can be done so by editing the ```times.toml``` file found in the ```/home``` directory. You need to comment the ```flowy::generate_config``` function call in ```main.rs``` and then build it after modifying the config file.
 
 ## Supported Environments
+* MacOS
 * GNOME Based - Ubuntu, Fedora, Pantheon
 * Linux Mint Cinnamon
 * Linux Mint MATE
