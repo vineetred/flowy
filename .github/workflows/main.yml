@@ -5,16 +5,16 @@ on: [push, pull_request]
 
 jobs:
 
-  release-linux-musl:
+  release-linux-gnu:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: rustup target add x86_64-unknown-linux-musl
-    - run: cargo build --release --target=x86_64-unknown-linux-musl
+    - run: rustup target add x86_64-unknown-linux-gnu
+    - run: cargo build --release --target=x86_64-unknown-linux-gnu
     - uses: actions/upload-artifact@v1
       with:
-        name: flowy_linux_musl
-        path: target/x86_64-unknown-linux-musl/release/flowy
+        name: flowy_linux_gnu
+        path: target/x86_64-unknown-linux-gnu/release/flowy
 
   release-macos:
     runs-on: macos-latest
