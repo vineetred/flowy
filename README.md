@@ -1,5 +1,5 @@
 # Flowy
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![crates.io](https://img.shields.io/crates/v/flowy.svg) ![Build Flowy](https://github.com/vineetred/flowy/workflows/Build%20Flowy/badge.svg?branch=master) ![Docs](https://docs.rs/flowy/badge.svg)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![crates.io](https://img.shields.io/crates/v/flowy.svg) ![CI](https://github.com/vineetred/flowy/workflows/CI/badge.svg?branch=master)
 
 ## Demo
 <p align="center">
