@@ -1,7 +1,7 @@
 
 name: Build Flowy
 
-on: push
+on: [push, pull_request]
 
 jobs:
 
