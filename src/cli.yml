@@ -1,5 +1,5 @@
 name: flowy
-version: "0.1.8"
+version: "0.2.0"
 author: Vineet Reddy <vineetreddy@live.com>
 about: Changes wallpaper dynamically
 args:
@@ -9,4 +9,11 @@ args:
         value_name: DIR PATH
         about: Tells flowy where your wallpapers are
         takes_value: true
-        required: true
+        # required: true
+
+    - preset:
+        short: pre
+        long: preset
+        value_name: PRESET NAME
+        about: Tells flowy what preset to get
+        takes_value: true

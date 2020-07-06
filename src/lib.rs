@@ -7,6 +7,17 @@ use std::thread;
 use std::time::Duration;
 use toml;
 
+pub fn match_dir(dir: Option<&str>) -> Result<(), Box<dyn Error>> {
+    match dir {
+        None => (),
+        Some(dir) => match generate_config(dir) {
+            Ok(_) => println!("Generated config file"),
+            Err(e) => eprintln!("Error generating config file: {}", e),
+        },
+    }
+
+    Ok(())
+}
 /// Stores the times and filepaths as a vector of strings
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -30,6 +41,7 @@ pub fn get_wallpaper() -> Result<String, Box<dyn Error>> {
         "GNOME" => Command::new("gsettings")
             .args(&["get", "org.gnome.desktop.background", "picture-uri"])
             .output()?,
+
         "X-Cinnamon" => Command::new("dconf")
             .arg("read")
             .arg("/org/cinnamon/desktop/background/picture-uri")
@@ -54,6 +66,7 @@ pub fn get_wallpaper() -> Result<String, Box<dyn Error>> {
                 "/com/deepin/wrap/gnome/desktop/background/picture-uri",
             ])
             .output()?,
+
         // Panics since flowy does not support others yet
         _ => panic!("Unsupported Desktop Environment"),
     };
@@ -98,6 +111,7 @@ pub fn set_paper(path: &str) -> Result<(), Box<dyn Error>> {
                 .args(&["set", "org.gnome.desktop.background", "picture-uri", &path])
                 .output()?;
         }
+
         "X-Cinnamon" => {
             Command::new("dconf")
                 .args(&[

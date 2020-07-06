@@ -13,12 +13,13 @@
 ## Usage
 * The documentation can be found at https://docs.rs/flowy.
 * You can either download the binary or get the Debian package.
-* If you want a good set of wallpapers to begin with, check out this [collection] (https://drive.google.com/file/d/1KPCWxo7kepEsiscPHDT1KuaUXvOgZXw7/view)
+* Flowy comes with a preset ```lake``` set of wallpapers. See the binary section for more information.
 
 ### Binary - Recommended
 * It can be either found in the Releases section or can be installed using Cargo by running the command ```cargo install flowy```.
 * If you use the binary, just run it by typing ```flowy -d``` or ```flowy --dir``` to set the path to the wallpaper directory.
-* If you're using Linux, you can either let the binary run forever in a terminal or setup a ```systemd``` service so it listens in the background.
+* In case you want to use the preset wallpapers, run ```flowy --preset lake``` or ```flowy -p lake```. This downloads the Lakeside wallpapers made by Louis Coyle. They can also be found [here](https://bucket-more.s3.ap-south-1.amazonaws.com/uploads/lake.tar.gz).
+* If you're using Linux, you can either let the binary run forever in a terminal session or setup a ```systemd``` service so it listens in the background. The Debian package does this automatically for you.
 
 ### Debian package
 * If you use the Debian package, then it will install flowy as a ```systemd``` service. During installation, flowy will ask you your directory. 
