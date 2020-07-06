@@ -26,14 +26,13 @@ fn is_gnome_compliant(desktop: &str) -> bool {
 pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
 
     let desktop = get_envt()?;
-
-    if is_gnome_compliant(&desktop) {
-        Command::new("gsettings")
-        .args(&["get", "org.gnome.desktop.background", "picture-uri"])
-        .output()?;
-    }
-
+    
     let output = match desktop.as_str() {
+        "GNOME" =>  {
+            Command::new("gsettings")
+            .args(&["get", "org.gnome.desktop.background", "picture-uri"])
+            .output()?
+        },
         "X-Cinnamon" => {
             Command::new("dconf")
             .arg("read")
@@ -86,8 +85,12 @@ pub fn get_wallpaper() -> Result<String,  Box<dyn Error>>{
 #[cfg(target_os = "linux")]
 pub fn get_envt() -> Result<String, Box<dyn Error>> {
 
-    Ok(std::env::var("XDG_CURRENT_DESKTOP")?)
-
+    let desktop = std::env::var("XDG_CURRENT_DESKTOP")?;
+    if !is_gnome_compliant(&desktop) {
+        return Ok(desktop);
+        
+    }
+    Ok(String::from("GNOME"))
 }
 
 /// args - filepath
@@ -99,13 +102,13 @@ pub fn set_paper (path : &str) -> Result<(), Box<dyn Error>>  {
     let path = enquote::enquote('"', &format!("{}", path));
     // Getting desktop here
     let desktop = get_envt()?;
-    // Checking if it is GNOME based
-    if is_gnome_compliant(&desktop) {
-        Command::new("gsettings")
-        .args(&["set", "org.gnome.desktop.background", "picture-uri", &path])
-        .output()?;
-    }
+
     match desktop.as_str() {
+        "GNOME" => {
+            Command::new("gsettings")
+            .args(&["set", "org.gnome.desktop.background", "picture-uri", &path])
+            .output()?;
+        }
         "X-Cinnamon" => {
             Command::new("dconf")
             .args(&["write", "/org/cinnamon/desktop/background/picture-uri",&path])
