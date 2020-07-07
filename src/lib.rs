@@ -1,12 +1,14 @@
 use clokwerk::{Scheduler, TimeUnits};
-use enquote;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::io::BufRead;
 use std::process::Command;
 use std::thread;
 use std::time::Duration;
-use toml;
 
+/// Basic error handling to ensure
+/// an empty args field does not
+/// crash the app
 pub fn match_dir(dir: Option<&str>) -> Result<(), Box<dyn Error>> {
     match dir {
         None => (),
@@ -67,14 +69,17 @@ pub fn get_wallpaper() -> Result<String, Box<dyn Error>> {
             ])
             .output()?,
 
+        "KDE" => return Ok(kde_get()?),
+
         // Panics since flowy does not support others yet
         _ => panic!("Unsupported Desktop Environment"),
     };
 
-    return Ok(enquote::unquote(
+    Ok(enquote::unquote(
         String::from_utf8(output.stdout)?.trim().into(),
-    )?);
+    )?)
 }
+
 #[cfg(target_os = "macos")]
 pub fn get_wallpaper() -> Result<String, Box<dyn Error>> {
     // Generate the Applescript string
@@ -156,6 +161,29 @@ pub fn set_paper(path: &str) -> Result<(), Box<dyn Error>> {
                 ])
                 .output()?;
         }
+
+        "KDE" => {
+            // KDE needs plasma shell scripting
+            // to change the wallpaper
+            let kde_set_arg = format!(
+                r#"
+            const monitors = desktops()
+            for (var i = 0; i < monitors.length; i++) {{
+                monitors[i].currentConfigGroup = ["Wallpaper"]
+                monitors[i].writeConfig("Image", {})
+            }}"#,
+                &path
+            );
+
+            Command::new("qdbus")
+                .args(&[
+                    "org.kde.plasmashell",
+                    "/PlasmaShell",
+                    "org.kde.PlasmaShell.evaluateScript",
+                    &kde_set_arg,
+                ])
+                .output()?;
+        }
         // Panics since flowy does not support others yet
         _ => panic!("Unsupported Desktop Environment"),
     }
@@ -194,7 +222,8 @@ pub fn set_times() {
     }
     loop {
         scheduler.run_pending();
-        thread::sleep(Duration::from_millis(1000));
+        // Listens every minute
+        thread::sleep(Duration::from_millis(100000));
     }
 }
 
@@ -251,4 +280,24 @@ pub fn generate_config(path: &str) -> Result<(), Box<dyn Error>> {
     let toml_string = toml::to_string(&file)?;
     std::fs::write("times.toml", toml_string)?;
     Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn kde_get() -> Result<String, Box<dyn Error>> {
+    // Getting current directory and
+    // appending the kde wallpaper
+    // repo to the end of the path
+    let mut path = std::env::current_dir()?.display().to_string();
+    path.push_str("/plasma-org.kde.plasma.desktop-appletsrc");
+    // Opening the file into a buffer reader
+    let file = std::fs::File::open(path)?;
+    let reader = std::io::BufReader::new(file);
+    for line in reader.lines() {
+        let line = line?;
+        if line.starts_with("Image=") {
+            return Ok(line[6..].trim().into());
+        }
+    }
+
+    Err("KDE Image not found".into())
 }

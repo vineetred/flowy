@@ -3,6 +3,7 @@ use flate2::read::GzDecoder;
 use std::error::Error;
 use tar::Archive;
 
+/// Downloads a given file
 fn get_file(url: &str) -> Result<(), Box<dyn Error>> {
     println!("GET file");
     let mut res = reqwest::blocking::get(url)?;

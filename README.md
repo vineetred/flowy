@@ -41,6 +41,7 @@
 * Linux Mint MATE
 * Deepin
 * XFCE
+* KDE
 
 **TODO**
 * GUI
