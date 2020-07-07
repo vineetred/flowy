@@ -167,6 +167,7 @@ pub fn set_paper(path: &str) -> Result<(), Box<dyn Error>> {
                 r#"
             const monitors = desktops()
             for (var i = 0; i < monitors.length; i++) {{
+                monitors[i].wallpaperPlugin = "org.kde.image"
                 monitors[i].currentConfigGroup = ["Wallpaper"]
                 monitors[i].writeConfig("Image", {})
             }}"#,
