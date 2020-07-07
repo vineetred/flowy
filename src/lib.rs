@@ -8,6 +8,7 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::Duration;
+use wallpapers::{Desktop, DesktopEnvt};
 
 mod wallpapers;
 
@@ -109,16 +110,18 @@ pub fn set_times(config: Config) {
     println!("Times - {:#?}", &times);
     println!("Paths - {:#?}", &walls);
 
+    let de = DesktopEnvt::new().expect("Desktop envt could not be determined");
+
     // set current wallpaper
     let current_index = get_current_wallpaper_idx(walls.len());
-    wallpapers::set_paper(&walls[current_index]).unwrap();
+    de.set_wallpaper(&walls[current_index]).unwrap();
 
     let mut scheduler = Scheduler::new();
     for (time, wall) in times.into_iter().zip(walls) {
         scheduler
             .every(1.day())
             .at(&time)
-            .run(move || wallpapers::set_paper(&wall).unwrap());
+            .run(move || de.set_wallpaper(&wall).unwrap());
     }
     loop {
         scheduler.run_pending();
