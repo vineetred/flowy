@@ -24,7 +24,7 @@
 * If you're using Linux, you can either let the binary run forever in a terminal session or setup a ```systemd``` service so it listens in the background. The Debian package does this automatically for you.
 
 ### Debian package
-* If you use the Debian package, then it will install flowy as a ```systemd``` service. During installation, flowy will ask you your directory. 
+* If you use the Debian package, then it will install flowy as a ```systemd``` service. During installation, flowy will ask you your directory.
 * Once the installation is done, run the command ```systemctl --user start flowy.service``` to run the application.
 * Once installation is done and you would still like to change the directory, go to the systemd service file found at ```/etc/systemd/user``` and change the directory in that file.
 
@@ -34,7 +34,12 @@
 * It does not matter what the names of the files are as long as they are sequential.
 
 ## Experimental
-* By default, flowy evenly sets the wallpaper change time based on the number of wallpapers there are. In case you would like to modify these times, it can be done so by editing the ```times.toml``` file found in the ```/home``` directory. You need to comment the ```flowy::generate_config``` function call in ```main.rs``` and then build it after modifying the config file.
+* By default, flowy evenly sets the wallpaper change time based on the number of wallpapers there are. In case you would like to modify these times, it can be done so by editing the ```config.toml``` file found in the config directory. You need to comment the ```flowy::generate_config``` function call in ```main.rs``` and then build it after modifying the config file.
+
+  The location of the config directory depends on your operating system:
+  * `~/.config/flowy` on Linux
+  <!-- * `C:\User\Alice\AppData\Roaming\flowy` on Windows (Windows is not supported ATM) -->
+  * `/Users/Alice/Library/Preferences/flowy` on macOS
 
 ## Supported Environments
 * MacOS
