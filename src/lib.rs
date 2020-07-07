@@ -4,7 +4,7 @@ use clokwerk::{Scheduler, TimeUnits};
 use directories_next::BaseDirs;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::Duration;
 
@@ -16,7 +16,7 @@ mod wallpapers;
 pub fn match_dir(dir: Option<&str>) -> Result<(), Box<dyn Error>> {
     match dir {
         None => (),
-        Some(dir) => match generate_config(dir) {
+        Some(dir) => match generate_config(Path::new(dir)) {
             Ok(_) => println!("Generated config file"),
             Err(e) => eprintln!("Error generating config file: {}", e),
         },
@@ -41,7 +41,7 @@ pub fn get_config() -> Result<Config, Box<dyn Error>> {
 }
 
 /// Returns the contents of a given dir
-pub fn get_dir(path: &str) -> Result<Vec<String>, Box<dyn Error>> {
+pub fn get_dir(path: &Path) -> Result<Vec<String>, Box<dyn Error>> {
     let mut files: Vec<String> = std::fs::read_dir(path)?
         .into_iter()
         .map(|x| x.unwrap().path().display().to_string())
@@ -66,7 +66,7 @@ pub fn get_dir(path: &str) -> Result<Vec<String>, Box<dyn Error>> {
 }
 
 /// Generates the config file. Takes the wallpaper folder path as args.
-pub fn generate_config(path: &str) -> Result<(), Box<dyn Error>> {
+pub fn generate_config(path: &Path) -> Result<(), Box<dyn Error>> {
     let walls = get_dir(path)?;
     let length = walls.len();
     let div = 1440 / length;
@@ -84,13 +84,18 @@ pub fn generate_config(path: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// Returns the path where the config file is stored. If the directory doesn't exist, it is created.
-fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
+/// Returns the path of the config directory. If the directory doesn't exist, it is created.
+pub fn get_config_dir() -> Result<PathBuf, Box<dyn Error>> {
     let base_dirs = BaseDirs::new().expect("Couldn't get base directory for the config file");
     let mut config_file = base_dirs.config_dir().to_path_buf();
     config_file.push("flowy");
     std::fs::create_dir_all(&config_file)?;
+    Ok(config_file)
+}
 
+/// Returns the path where the config file is stored
+fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
+    let mut config_file = get_config_dir()?;
     config_file.push("config.toml");
     Ok(config_file)
 }

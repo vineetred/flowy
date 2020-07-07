@@ -1,47 +1,57 @@
 // use reqwest
-use flate2::read::GzDecoder;
 use std::error::Error;
+use std::fs::File;
+use std::path::Path;
+
+use flate2::read::GzDecoder;
 use tar::Archive;
 
 /// Downloads a given file
-fn get_file(url: &str) -> Result<(), Box<dyn Error>> {
+fn get_file(path: &Path, url: &str) -> Result<(), Box<dyn Error>> {
     println!("GET file");
     let mut res = reqwest::blocking::get(url)?;
     println!("Status: {}", res.status());
-    let mut out = std::fs::File::create("lake.tar.gz").expect("failed to create file");
+    let mut out = File::create(path).expect("failed to create file");
     std::io::copy(&mut res, &mut out).expect("failed to copy content");
-    println!("lake.tar.gz downloaded");
+    println!("Tar ball downloaded");
     Ok(())
 }
 
-fn unzip_tar(path: &str) -> Result<(), Box<dyn Error>> {
-    println!("Unzipping tar ball {}", &path);
-    let tar_gz = std::fs::File::open(path)?;
+/// Unpacks a tar ball to a new directory
+fn unpack_tar(src: &Path, dst: &Path) -> Result<(), Box<dyn Error>> {
+    println!("Unpacking tar ball {:?}", &src);
+    let tar_gz = File::open(src)?;
     let tar = GzDecoder::new(tar_gz);
     let mut archive = Archive::new(tar);
-    archive.unpack(".")?;
+    archive.unpack(dst)?;
     println!("Done");
     Ok(())
 }
 
-fn delete_tar(path: &str) -> Result<(), Box<dyn Error>> {
-    std::fs::remove_file(path)?;
-    Ok(())
-}
 pub fn match_preset(preset: Option<&str>) -> Result<(), Box<dyn Error>> {
     match preset {
         None => (),
         Some(_) => {
+            let config_path = flowy::get_config_dir()?;
+
+            let mut archive_path = config_path.clone();
+            archive_path.push("lake.tar.gz");
+            let mut dir_path = config_path.clone();
+            dir_path.push("lake");
+
             // Download and unzip the folder
-            get_file("https://bucket-more.s3.ap-south-1.amazonaws.com/uploads/lake.tar.gz")?;
-            unzip_tar("lake.tar.gz").unwrap();
+            get_file(
+                &archive_path,
+                "https://bucket-more.s3.ap-south-1.amazonaws.com/uploads/lake.tar.gz",
+            )?;
+            unpack_tar(&archive_path, &config_path).unwrap();
+
             // Deleting the tar ball
-            delete_tar("lake.tar.gz")?;
-            // Find the current dir and pass it to the generate config
-            let mut current_dir = std::env::current_dir()?.display().to_string();
-            current_dir.push_str("/lake");
+            std::fs::remove_file(&archive_path)?;
+
             // A config file, config.toml must be generated now
-            flowy::generate_config(&current_dir)?;
+            flowy::generate_config(&dir_path)?;
+
             println!("Preset set successfully")
         }
     }
