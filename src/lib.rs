@@ -1,10 +1,10 @@
 // THIS MODULE HANDLES GENERATION OF THE CONFIG FILE
 // AND THE RUNNING OF THE DAEMON
+use clokwerk::{Scheduler, TimeUnits};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::thread;
 use std::time::Duration;
-use clokwerk::{Scheduler, TimeUnits};
 mod wallpapers;
 
 /// Basic error handling to ensure
