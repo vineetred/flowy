@@ -69,7 +69,7 @@ pub fn generate_config(path: &str) -> Result<(), Box<dyn Error>> {
     let mut times = Vec::new();
     let mut start_sec = 0;
     for _ in 0..length {
-        times.push(format!("{}:{}", start_sec / 60, start_sec % 60));
+        times.push(format!("{:02}:{:02}", start_sec / 60, start_sec % 60));
         start_sec += div;
     }
 
@@ -92,9 +92,7 @@ pub fn set_times() {
     println!("Times - {:#?}", &times);
     println!("Paths - {:#?}", &walls);
     let mut scheduler = Scheduler::new();
-    for (i, time) in times.into_iter().enumerate() {
-        // Workaround becase Rust was being a bitch
-        let wall = walls[i].clone();
+    for (time, wall) in times.into_iter().zip(walls) {
         scheduler
             .every(1.day())
             .at(&time)
@@ -103,6 +101,6 @@ pub fn set_times() {
     loop {
         scheduler.run_pending();
         // Listens every minute
-        thread::sleep(Duration::from_millis(100000));
+        thread::sleep(Duration::from_secs(60));
     }
 }
