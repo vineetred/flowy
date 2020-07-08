@@ -24,6 +24,13 @@ jobs:
       with:
         name: flowy_macos
         path: target/release/flowy
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ ff12b74d-69c6-4f8b-829b-32d2581bcc17 }}
+        file: ./coverage.xml
+        name: codecov-flowy
 
   # release-windows:
   #   runs-on: windows-latest
