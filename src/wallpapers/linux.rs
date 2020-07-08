@@ -7,26 +7,26 @@ use std::process::Command;
 /// A desktop environment
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum DesktopEnvt {
-    Gnome,
+    GNOME,
     Cinnamon,
-    Mate,
-    Xfce,
+    MATE,
+    XFCE,
     Deepin,
-    Kde,
+    KDE,
 }
 
 impl Desktop for DesktopEnvt {
     fn new() -> Result<Self, Box<dyn Error>> {
         let desktop = std::env::var("XDG_CURRENT_DESKTOP")?;
         if is_gnome_compliant(&desktop) {
-            Ok(DesktopEnvt::Gnome)
+            Ok(DesktopEnvt::GNOME)
         } else {
             Ok(match &desktop[..] {
                 "X-Cinnamon" => DesktopEnvt::Cinnamon,
-                "MATE" => DesktopEnvt::Mate,
-                "XFCE" => DesktopEnvt::Xfce,
+                "MATE" => DesktopEnvt::MATE,
+                "XFCE" => DesktopEnvt::XFCE,
                 "Deepin" => DesktopEnvt::Deepin,
-                "KDE" => DesktopEnvt::Kde,
+                "KDE" => DesktopEnvt::KDE,
                 _ => panic!("Unsupported Desktop Environment"),
             })
         }
@@ -36,7 +36,7 @@ impl Desktop for DesktopEnvt {
         let path = enquote::enquote('"', &format!("{}", path));
 
         match self {
-            DesktopEnvt::Gnome => {
+            DesktopEnvt::GNOME => {
                 Command::new("gsettings")
                     .args(&["set", "org.gnome.desktop.background", "picture-uri", &path])
                     .output()?;
@@ -52,7 +52,7 @@ impl Desktop for DesktopEnvt {
                     .output()?;
             }
 
-            DesktopEnvt::Mate => {
+            DesktopEnvt::MATE => {
                 let mate_path = &path[7..];
                 Command::new("dconf")
                     .args(&[
@@ -63,7 +63,7 @@ impl Desktop for DesktopEnvt {
                     .output()?;
             }
 
-            DesktopEnvt::Xfce => {
+            DesktopEnvt::XFCE => {
                 let xfce_path = &path[7..];
                 Command::new("xfconf-query")
                     .args(&[
@@ -87,7 +87,7 @@ impl Desktop for DesktopEnvt {
                     .output()?;
             }
 
-            DesktopEnvt::Kde => {
+            DesktopEnvt::KDE => {
                 // KDE needs plasma shell scripting to change the wallpaper
                 let kde_set_arg = format!(
                     r#"
@@ -115,7 +115,7 @@ impl Desktop for DesktopEnvt {
 
     fn get_wallpaper(&self) -> Result<PathBuf, Box<dyn Error>> {
         let output = match self {
-            DesktopEnvt::Gnome => Command::new("gsettings")
+            DesktopEnvt::GNOME => Command::new("gsettings")
                 .args(&["get", "org.gnome.desktop.background", "picture-uri"])
                 .output()?,
 
@@ -124,11 +124,11 @@ impl Desktop for DesktopEnvt {
                 .arg("/org/cinnamon/desktop/background/picture-uri")
                 .output()?,
 
-            DesktopEnvt::Mate => Command::new("dconf")
+            DesktopEnvt::MATE => Command::new("dconf")
                 .args(&["read", "/org/mate/desktop/background/picture-filename"])
                 .output()?,
 
-            DesktopEnvt::Xfce => Command::new("xfconf-query")
+            DesktopEnvt::XFCE => Command::new("xfconf-query")
                 .args(&[
                     "-c",
                     "xfce4-desktop",
@@ -144,7 +144,7 @@ impl Desktop for DesktopEnvt {
                 ])
                 .output()?,
 
-            DesktopEnvt::Kde => return Ok(kde_get()?),
+            DesktopEnvt::KDE => return Ok(kde_get()?),
         };
 
         let output = enquote::unquote(String::from_utf8(output.stdout)?.trim().into())?;
@@ -159,7 +159,7 @@ fn is_gnome_compliant(desktop: &str) -> bool {
 
 fn kde_get() -> Result<PathBuf, Box<dyn Error>> {
     // Getting current directory and
-    // appending the kde wallpaper
+    // appending the KDE wallpaper
     // repo to the end of the path
     let mut path = std::env::current_dir()?.display().to_string();
     path.push_str("/plasma-org.kde.plasma.desktop-appletsrc");

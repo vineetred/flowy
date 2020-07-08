@@ -110,18 +110,18 @@ pub fn set_times(config: Config) {
     println!("Times - {:#?}", &times);
     println!("Paths - {:#?}", &walls);
 
-    let de = DesktopEnvt::new().expect("Desktop envt could not be determined");
+    let desktop_envt = DesktopEnvt::new().expect("Desktop envt could not be determined");
 
     // set current wallpaper
     let current_index = get_current_wallpaper_idx(walls.len());
-    de.set_wallpaper(&walls[current_index]).unwrap();
+    desktop_envt.set_wallpaper(&walls[current_index]).unwrap();
 
     let mut scheduler = Scheduler::new();
     for (time, wall) in times.into_iter().zip(walls) {
         scheduler
             .every(1.day())
             .at(&time)
-            .run(move || de.set_wallpaper(&wall).unwrap());
+            .run(move || desktop_envt.set_wallpaper(&wall).unwrap());
     }
     loop {
         scheduler.run_pending();
