@@ -1,5 +1,6 @@
 // THIS MODULE HANDLES GENERATION OF THE CONFIG FILE
 // AND THE RUNNING OF THE DAEMON
+use chrono::{Local, Timelike};
 use clokwerk::{Scheduler, TimeUnits};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -91,6 +92,11 @@ pub fn set_times() {
     let times = config.times;
     println!("Times - {:#?}", &times);
     println!("Paths - {:#?}", &walls);
+
+    // set current wallpaper
+    let current_index = get_current_wallpaper(walls.len());
+    wallpapers::set_paper(&walls[current_index]).unwrap();
+
     let mut scheduler = Scheduler::new();
     for (i, time) in times.into_iter().enumerate() {
         // Workaround becase Rust was being a bitch
@@ -105,4 +111,14 @@ pub fn set_times() {
         // Listens every minute
         thread::sleep(Duration::from_millis(100000));
     }
+}
+
+fn get_current_wallpaper(wall_len: usize) -> usize {
+    const SECS_PER_DAY: u32 = 60 * 60 * 24;
+
+    let time = Local::now().time();
+    let time_relative = time.num_seconds_from_midnight() as f32 / SECS_PER_DAY as f32;
+    let index = (wall_len as f32 * time_relative) as usize;
+    // prevent overflow during leap seconds:
+    index.min(wall_len - 1)
 }
