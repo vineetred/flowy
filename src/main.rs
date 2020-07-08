@@ -1,6 +1,7 @@
 // CLI Import
 use clap::{load_yaml, App};
 mod presets;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Housekeeping for Clap Arg parsing
     let yaml = load_yaml!("cli.yml");
@@ -21,7 +22,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Err(e) => eprintln!("Error with preset {}", e),
     }
     // Runs forever
-    flowy::set_times();
+    let config = flowy::get_config()?;
+    flowy::set_times(config);
 
     Ok(())
 }

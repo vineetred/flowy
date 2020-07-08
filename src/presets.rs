@@ -40,7 +40,7 @@ pub fn match_preset(preset: Option<&str>) -> Result<(), Box<dyn Error>> {
             // Find the current dir and pass it to the generate config
             let mut current_dir = std::env::current_dir()?.display().to_string();
             current_dir.push_str("/lake");
-            // A config file, times.toml must be generated now
+            // A config file, config.toml must be generated now
             flowy::generate_config(&current_dir)?;
             println!("Preset set successfully")
         }

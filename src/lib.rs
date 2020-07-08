@@ -2,10 +2,13 @@
 // AND THE RUNNING OF THE DAEMON
 use chrono::{Local, Timelike};
 use clokwerk::{Scheduler, TimeUnits};
+use directories_next::BaseDirs;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
+
 mod wallpapers;
 
 /// Basic error handling to ensure
@@ -30,8 +33,9 @@ pub struct Config {
 }
 
 /// Creates a new instance of struct Config and returns it
-pub fn get_config(path: &str) -> Result<Config, Box<dyn Error>> {
-    let toml_file = std::fs::read_to_string(path)?;
+pub fn get_config() -> Result<Config, Box<dyn Error>> {
+    let config_path = get_config_path()?;
+    let toml_file = std::fs::read_to_string(&config_path)?;
     let toml_data: Config = toml::from_str(&toml_file)?;
 
     Ok(toml_data)
@@ -64,30 +68,37 @@ pub fn get_dir(path: &str) -> Result<Vec<String>, Box<dyn Error>> {
 
 /// Generates the config file. Takes the wallpaper folder path as args.
 pub fn generate_config(path: &str) -> Result<(), Box<dyn Error>> {
-    let files = get_dir(path)?;
-    let length = files.len();
+    let walls = get_dir(path)?;
+    let length = walls.len();
     let div = 1440 / length;
     let mut times = Vec::new();
     let mut start_sec = 0;
     for _ in 0..length {
-        times.push(format!("{}:{}", start_sec / 60, start_sec % 60));
+        times.push(format!("{:02}:{:02}", start_sec / 60, start_sec % 60));
         start_sec += div;
     }
 
-    let file = Config {
-        times,
-        walls: files,
-    };
+    let config = Config { times, walls };
 
-    let toml_string = toml::to_string(&file)?;
-    std::fs::write("times.toml", toml_string)?;
+    let toml_string = toml::to_string(&config)?;
+    std::fs::write(&get_config_path()?, toml_string)?;
     Ok(())
+}
+
+/// Returns the path where the config file is stored. If the directory doesn't exist, it is created.
+fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
+    let base_dirs = BaseDirs::new().expect("Couldn't get base directory for the config file");
+    let mut config_file = base_dirs.config_dir().to_path_buf();
+    config_file.push("flowy");
+    std::fs::create_dir_all(&config_file)?;
+
+    config_file.push("config.toml");
+    Ok(config_file)
 }
 
 // TODO - Someday, add some Result error return here
 /// The main function that reads the config and runs the daemon
-pub fn set_times() {
-    let config = get_config("times.toml").unwrap();
+pub fn set_times(config: Config) {
     let walls = config.walls;
     let times = config.times;
     println!("Times - {:#?}", &times);
@@ -98,9 +109,7 @@ pub fn set_times() {
     wallpapers::set_paper(&walls[current_index]).unwrap();
 
     let mut scheduler = Scheduler::new();
-    for (i, time) in times.into_iter().enumerate() {
-        // Workaround becase Rust was being a bitch
-        let wall = walls[i].clone();
+    for (time, wall) in times.into_iter().zip(walls) {
         scheduler
             .every(1.day())
             .at(&time)
@@ -109,7 +118,7 @@ pub fn set_times() {
     loop {
         scheduler.run_pending();
         // Listens every minute
-        thread::sleep(Duration::from_millis(100000));
+        thread::sleep(Duration::from_secs(60));
     }
 }
 
