@@ -105,7 +105,7 @@ pub fn set_times(config: Config) {
     println!("Paths - {:#?}", &walls);
 
     // set current wallpaper
-    let current_index = get_current_wallpaper(walls.len());
+    let current_index = get_current_wallpaper_idx(walls.len());
     wallpapers::set_paper(&walls[current_index]).unwrap();
 
     let mut scheduler = Scheduler::new();
@@ -122,7 +122,9 @@ pub fn set_times(config: Config) {
     }
 }
 
-fn get_current_wallpaper(wall_len: usize) -> usize {
+/// Returns the index of the current wallpaper
+/// depending on the number of wallpapers and the time of day.
+fn get_current_wallpaper_idx(wall_len: usize) -> usize {
     const SECS_PER_DAY: u32 = 60 * 60 * 24;
 
     let time = Local::now().time();
