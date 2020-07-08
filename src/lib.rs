@@ -1,5 +1,6 @@
 // THIS MODULE HANDLES GENERATION OF THE CONFIG FILE
 // AND THE RUNNING OF THE DAEMON
+use chrono::{Local, Timelike};
 use clokwerk::{Scheduler, TimeUnits};
 use directories_next::BaseDirs;
 use serde::{Deserialize, Serialize};
@@ -107,6 +108,11 @@ pub fn set_times(config: Config) {
     let times = config.times;
     println!("Times - {:#?}", &times);
     println!("Paths - {:#?}", &walls);
+
+    // set current wallpaper
+    let current_index = get_current_wallpaper_idx(walls.len());
+    wallpapers::set_paper(&walls[current_index]).unwrap();
+
     let mut scheduler = Scheduler::new();
     for (time, wall) in times.into_iter().zip(walls) {
         scheduler
@@ -119,4 +125,16 @@ pub fn set_times(config: Config) {
         // Listens every minute
         thread::sleep(Duration::from_secs(60));
     }
+}
+
+/// Returns the index of the current wallpaper
+/// depending on the number of wallpapers and the time of day.
+fn get_current_wallpaper_idx(wall_len: usize) -> usize {
+    const SECS_PER_DAY: u32 = 60 * 60 * 24;
+
+    let time = Local::now().time();
+    let time_relative = time.num_seconds_from_midnight() as f32 / SECS_PER_DAY as f32;
+    let index = (wall_len as f32 * time_relative) as usize;
+    // prevent overflow during leap seconds:
+    index.min(wall_len - 1)
 }
