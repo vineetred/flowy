@@ -49,6 +49,7 @@
 * Deepin
 * XFCE
 * KDE
+* BSPWM(with feh)
 
 **TODO**
 * GUI

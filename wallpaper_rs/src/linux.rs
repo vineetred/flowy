@@ -13,6 +13,7 @@ pub enum DesktopEnvt {
     XFCE,
     Deepin,
     KDE,
+    BSPWM,
 }
 
 impl Desktop for DesktopEnvt {
@@ -27,6 +28,7 @@ impl Desktop for DesktopEnvt {
                 "XFCE" => DesktopEnvt::XFCE,
                 "Deepin" => DesktopEnvt::Deepin,
                 "KDE" => DesktopEnvt::KDE,
+                "bspwm" => DesktopEnvt::BSPWM,
                 _ => panic!("Unsupported Desktop Environment"),
             })
         }
@@ -108,6 +110,12 @@ impl Desktop for DesktopEnvt {
                     ])
                     .output()?;
             }
+
+            DesktopEnvt::BSPWM => {
+                Command::new("feh")
+                    .args(&["--bg-fill", &path.replace("\"", "")])
+                    .output()?;
+            }
         }
 
         Ok(())
@@ -143,8 +151,14 @@ impl Desktop for DesktopEnvt {
                     "/com/deepin/wrap/gnome/desktop/background/picture-uri",
                 ])
                 .output()?,
-
             DesktopEnvt::KDE => return Ok(kde_get()?),
+            DesktopEnvt::BSPWM => Command::new("sed")
+                .args(&[
+                    "-n",
+                    "'s/feh.*\\('.*'\\)/\\1/gp'",
+                    &format!("/home/{}/.fehbg", std::env::var("USER")?.trim()),
+                ])
+                .output()?,
         };
 
         let output = enquote::unquote(String::from_utf8(output.stdout)?.trim().into())?;
