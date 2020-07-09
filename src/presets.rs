@@ -1,18 +1,18 @@
 // use reqwest
+use flate2::read::GzDecoder;
 use std::error::Error;
 use std::fs::File;
 use std::path::Path;
-
-use flate2::read::GzDecoder;
 use tar::Archive;
 
 /// Downloads a given file
-fn get_file(path: &Path, url: &str) -> Result<(), Box<dyn Error>> {
+pub fn get_file(path: &Path, url: &str) -> Result<(), Box<dyn Error>> {
     println!("GET file");
-    let mut res = reqwest::blocking::get(url)?;
+    let res = ureq::get(url).call();
     println!("Status: {}", res.status());
-    let mut out = File::create(path).expect("failed to create file");
-    std::io::copy(&mut res, &mut out).expect("failed to copy content");
+    let mut reader = res.into_reader();
+    let mut out = File::create(path).expect("Failed to create file");
+    std::io::copy(&mut reader, &mut out).expect("Failed to copy content");
     println!("Tar ball downloaded");
     Ok(())
 }
@@ -28,6 +28,7 @@ fn unpack_tar(src: &Path, dst: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Matches the agrguments passed with preset flag
 pub fn match_preset(preset: Option<&str>) -> Result<(), Box<dyn Error>> {
     match preset {
         None => (),
