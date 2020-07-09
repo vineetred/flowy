@@ -10,7 +10,6 @@ use std::thread;
 use std::time::Duration;
 use wallpapers::{Desktop, DesktopEnvt};
 
-mod wallpapers;
 
 /// Basic error handling to ensure
 /// an empty args field does not
