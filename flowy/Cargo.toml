@@ -1,0 +1,40 @@
+[package]
+name = "flowy"
+version = "0.2.1"
+authors = ["vineetred <vineetreddy@live.com>"]
+edition = "2018"
+license = "GPL-3.0-or-later"
+description = "Dynamic desktop wallpaper changer"
+readme = "README.md"
+homepage = "https://github.com/vineetred/flowy"
+repository = "https://github.com/vineetred/flowy"
+categories = ["command-line-utilities"]
+exclude = ["demo.gif", "demo2.gif"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+wallpaperrs = { path = "../wallpaperrs" }
+enquote = "1.0.3"
+toml = "0.5"
+clokwerk = "0.3.0"
+serde = { version = "1.0.114", features = ["derive"] }
+clap = { version = "3.0.0-beta.1", features = ["yaml"] }
+flate2 = "1.0.16"
+tar = "0.4.29"
+directories-next = "1.0"
+chrono = "0.4"
+ureq = { version = "*", features = ["json"] }
+
+[package.metadata.deb]
+maintainer = "Vineet Reddy <vineetreddy@live.com>"
+license-file = ["LICENSE", "3"]
+depends = "$auto, systemd"
+extended-description = """\
+A dynamic desktop wallpaper changer that is written in the memory-safe programming language, Rust."""
+section = "admin"
+priority = "optional"
+assets = [
+    ["assets/flowy.service", "etc/systemd/user/", "644"],
+    ["target/release/flowy", "usr/bin/", "755"],
+]
+maintainer-scripts = "scripts/"

@@ -8,9 +8,8 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::Duration;
-use wallpapers::{Desktop, DesktopEnvt};
+use wallpaperrs::{Desktop, DesktopEnvt};
 
-mod wallpapers;
 
 /// Basic error handling to ensure
 /// an empty args field does not

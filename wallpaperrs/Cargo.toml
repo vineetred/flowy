@@ -1,0 +1,16 @@
+[package]
+name = "wallpaperrs"
+version = "0.1.0"
+authors = ["vineetred <vineetreddy@live.com>"]
+edition = "2018"
+license = "GPL-3.0-or-later"
+description = "Provides an interface for setting and getting desktop wallpaper."
+homepage = "https://github.com/vineetred/flowy"
+repository = "https://github.com/vineetred/flowy"
+categories = ["api-bindings"]
+
+keywords = ["desktop", "wallpaper", "background"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+enquote = "1.0.3"
