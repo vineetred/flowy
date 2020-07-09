@@ -1,5 +1,5 @@
 [package]
-name = "wallpaperrs"
+name = "wallpaper_rs"
 version = "0.1.0"
 authors = ["vineetred <vineetreddy@live.com>"]
 edition = "2018"

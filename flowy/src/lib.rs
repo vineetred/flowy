@@ -8,7 +8,7 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::Duration;
-use wallpaperrs::{Desktop, DesktopEnvt};
+use wallpaper_rs::{Desktop, DesktopEnvt};
 
 
 /// Basic error handling to ensure
