@@ -125,7 +125,7 @@ pub fn set_times(config: Config) {
     loop {
         scheduler.run_pending();
         // Listens every minute
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_secs(60));
     }
 }
 
