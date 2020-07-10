@@ -8,7 +8,7 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::Duration;
-use wallpapers::{Desktop, DesktopEnvt};
+use wallpaperrs::{Desktop, DesktopEnvt};
 
 
 /// Basic error handling to ensure
@@ -125,7 +125,7 @@ pub fn set_times(config: Config) {
     loop {
         scheduler.run_pending();
         // Listens every minute
-        thread::sleep(Duration::from_secs(60));
+        thread::sleep(Duration::from_secs(1));
     }
 }
 
