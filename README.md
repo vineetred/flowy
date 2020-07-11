@@ -16,10 +16,11 @@
 * The documentation can be found at https://docs.rs/flowy.
 * You can either download the binary or get the Debian package.
 * Flowy comes with a preset ```lake``` set of wallpapers. See the binary section for more information.
+* Flowy can also change the wallpapers based on **sunrise** and **sunset** timings of your location. See the Solar section for more information.
 
 ### Binary - Recommended
 * It can be either found in the Releases section or can be installed using Cargo by running the command ```cargo install flowy```.
-* If you use the binary, just run it by typing ```flowy -d``` or ```flowy --dir``` to set the path to the wallpaper directory.
+* If you use the binary, just run it by typing ```flowy -d``` or ```flowy --dir \path\to\wallpapers``` to set the path to the wallpaper directory.
 * In case you want to use the preset wallpapers, run ```flowy --preset lake``` or ```flowy -p lake```. This downloads the Lakeside wallpapers made by Louis Coyle. They can also be found [here](https://bucket-more.s3.ap-south-1.amazonaws.com/uploads/lake.tar.gz).
 * If you're using Linux, you can either let the binary run forever in a terminal session or setup a ```systemd``` service so it listens in the background. The Debian package does this automatically for you.
 
@@ -33,6 +34,13 @@
 * For example, if you have 11 wallpapers, the names must be ```paper-01.jpg, paper-02.jpg...```.
 * It does not matter what the names of the files are as long as they are sequential.
 
+## Solar - Sunrise and Sunset
+* Flowy can take into account your location's sunrise and sunset timings.
+* This option can be used by running ```flowy --solar /path/to/dir lat lon``` and passing flowy the path to the wallpapers, latitiude, and longitude of your location.
+* Keep in mind that the wallpapers in the path must be segregated by adding ```DAY``` or ```NIGHT``` tags within the wallpaper names. This is done so that flowy knows which wallpapers to show during the day and which wallpapers to show during the night. The normal sequential numbering rules mentioned in the ```Wallpapers directory``` subsections still apply.
+* Example naming scheme - ```DAY-01.jpg, DAY-02.jpg, NIGHT-03.jpg, NIGHT-04.jpg,...```.
+* If you do not want to segregate, use flowy in the normal mode (```--dir```).
+  
 ## Experimental
 * By default, flowy evenly sets the wallpaper change time based on the number of wallpapers there are. In case you would like to modify these times, it can be done so by editing the ```config.toml``` file found in the config directory. You need to comment the ```flowy::generate_config``` function call in ```main.rs``` and then build it after modifying the config file.
 
@@ -49,7 +57,7 @@
 * Deepin
 * XFCE
 * KDE
-* BSPWM(with feh)
+* BSPWM (with feh)
 
 **TODO**
 * GUI

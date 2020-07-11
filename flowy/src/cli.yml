@@ -18,3 +18,12 @@ args:
         value_name: PRESET NAME
         about: Tells flowy what preset to get
         takes_value: true
+
+    - solar:
+        short: sun
+        long: solar
+        value_name: DIR LAT LONG
+        about: Flowy is setup with Sunset and Sunrise times
+        takes_value: true
+        multiple: true
+        number_of_values: 3

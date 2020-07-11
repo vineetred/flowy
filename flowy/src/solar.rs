@@ -2,7 +2,7 @@
 ///
 /// This module makes extensive use of the [Julian Day notation](https://en.wikipedia.org/wiki/Julian_day)
 /// to measure elapsed days between events and in calculations.
-use chrono::{DateTime, Local, NaiveDateTime, Utc};
+use chrono::{DateTime, Local, NaiveDateTime, Utc, Timelike};
 use std::collections::HashMap;
 
 /* Ported from javascript code by U.S. Department of Commerce,
@@ -13,7 +13,6 @@ Jean Meeus. */
 
 /// Model of atmospheric refraction near horizon (in degrees).
 const ATM_REFRAC: f64 = 0.833;
-
 const ASTRO_TWILIGHT_ELEV: f64 = -18.0;
 const NAUT_TWILIGHT_ELEV: f64 = -12.0;
 const CIVIL_TWILIGHT_ELEV: f64 = -6.0;
@@ -415,4 +414,12 @@ fn unix_to_normal_time(time: i64) -> String {
 
     // Return the time in string type
     newdate
+}
+
+pub fn time_to_mins(time: String) -> u32 {
+    let time = chrono::NaiveTime::parse_from_str(&time, "%H:%M:%S").unwrap();
+    let h1 = time.hour();
+    let m1 = time.minute();
+    h1*60 + m1
+
 }

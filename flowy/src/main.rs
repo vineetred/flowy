@@ -1,5 +1,6 @@
 // CLI Import
 use clap::{load_yaml, App};
+use std::path::{Path, PathBuf};
 mod presets;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -10,6 +11,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Just supply the path and the TOML file is generated
     let dir = matches.value_of("dir");
     let preset = matches.value_of("preset");
+    // Error checking for the Solar option
+    if let Some(_) = matches.values_of("solar") {
+        let solar: Vec<_> = matches.values_of("solar").unwrap().collect();
+        flowy::generate_config_solar(Path::new(solar[0]), solar[1].parse::<f64>().unwrap(), solar[2].parse::<f64>().unwrap())?;
+    }
     // Since the functions are not required, this checks if
     // arguments have been passed to flowy
     // along with some error handling
@@ -24,6 +30,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Runs forever
     let config = flowy::get_config()?;
     flowy::set_times(config);
-
+    // Never reaches this but needed for Result return
     Ok(())
 }
