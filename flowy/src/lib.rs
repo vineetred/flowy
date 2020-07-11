@@ -1,6 +1,6 @@
 // THIS MODULE HANDLES GENERATION OF THE CONFIG FILE
 // AND THE RUNNING OF THE DAEMON
-use chrono::{Local, Timelike, DateTime};
+use chrono::{DateTime, Local, Timelike};
 use clokwerk::{Scheduler, TimeUnits};
 use directories_next::BaseDirs;
 use serde::{Deserialize, Serialize};
@@ -10,7 +10,6 @@ use std::thread;
 use std::time::Duration;
 use wallpaper_rs::{Desktop, DesktopEnvt};
 mod solar;
-
 
 /// Basic error handling to ensure
 /// an empty args field does not
@@ -69,38 +68,38 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
     Ok(files)
 }
 
-pub fn generate_config_solar(path: &Path, lat: f64, long: f64 ) -> Result<(), Box<dyn Error>> {
-
+pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box<dyn Error>> {
     let mut day_walls = get_dir(path, "DAY")?;
     let night_walls = get_dir(path, "NIGHT")?;
     let unixtime = DateTime::timestamp(&chrono::offset::Utc::now()) as f64;
 
-    let tt = solar::Timetable::new( unixtime, lat, long);
+    let tt = solar::Timetable::new(unixtime, lat, long);
     let (sunrise, sunset) = tt.get_sunrise_sunset();
     println!("Sunrise {} Sunset {}", sunrise, sunset);
     let mut sunrise = solar::time_to_mins(sunrise);
     let mut sunset = solar::time_to_mins(sunset);
 
-    let day_len = ((sunset as i32- sunrise as i32)  % 1440) as u32;
+    let day_len = ((sunset as i32 - sunrise as i32) % 1440) as u32;
     let night_len = 1440 - day_len;
     let day_div = day_len / day_walls.len() as u32;
-    let night_div = night_len/night_walls.len() as u32;
+    let night_div = night_len / night_walls.len() as u32;
     let mut times = Vec::new();
 
     for _ in 0..day_walls.len() {
-
         times.push(format!("{}:{}", sunrise / 60, sunrise % 60));
-        sunrise  = (sunrise + day_div) % 1440;
+        sunrise = (sunrise + day_div) % 1440;
     }
 
     for _ in 0..night_walls.len() {
-
         times.push(format!("{}:{}", sunset / 60, sunset % 60));
-        sunset  = (sunset + night_div) % 1440;
+        sunset = (sunset + night_div) % 1440;
     }
 
     day_walls.extend(night_walls);
-    let config = Config { times, walls:day_walls };
+    let config = Config {
+        times,
+        walls: day_walls,
+    };
     let toml_string = toml::to_string(&config)?;
     std::fs::write(&get_config_path()?, toml_string)?;
 

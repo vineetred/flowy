@@ -2,7 +2,7 @@
 ///
 /// This module makes extensive use of the [Julian Day notation](https://en.wikipedia.org/wiki/Julian_day)
 /// to measure elapsed days between events and in calculations.
-use chrono::{DateTime, Local, NaiveDateTime, Utc, Timelike};
+use chrono::{DateTime, Local, NaiveDateTime, Timelike, Utc};
 use std::collections::HashMap;
 
 /* Ported from javascript code by U.S. Department of Commerce,
@@ -420,6 +420,5 @@ pub fn time_to_mins(time: String) -> u32 {
     let time = chrono::NaiveTime::parse_from_str(&time, "%H:%M:%S").unwrap();
     let h1 = time.hour();
     let m1 = time.minute();
-    h1*60 + m1
-
+    h1 * 60 + m1
 }

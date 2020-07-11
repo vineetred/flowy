@@ -14,7 +14,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Error checking for the Solar option
     if let Some(_) = matches.values_of("solar") {
         let solar: Vec<_> = matches.values_of("solar").unwrap().collect();
-        flowy::generate_config_solar(Path::new(solar[0]), solar[1].parse::<f64>().unwrap(), solar[2].parse::<f64>().unwrap())?;
+        flowy::generate_config_solar(
+            Path::new(solar[0]),
+            solar[1].parse::<f64>().unwrap(),
+            solar[2].parse::<f64>().unwrap(),
+        )?;
     }
     // Since the functions are not required, this checks if
     // arguments have been passed to flowy
