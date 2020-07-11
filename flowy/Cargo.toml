@@ -19,11 +19,11 @@ toml = "0.5"
 clokwerk = "0.3.0"
 serde = { version = "1.0.114", features = ["derive"] }
 clap = { version = "3.0.0-beta.1", features = ["yaml"] }
-reqwest = { version = "0.10", features = ["blocking"] }
 flate2 = "1.0.16"
 tar = "0.4.29"
 directories-next = "1.0"
 chrono = "0.4"
+ureq = { version = "*", features = ["json"] }
 
 [package.metadata.deb]
 maintainer = "Vineet Reddy <vineetreddy@live.com>"
