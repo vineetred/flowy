@@ -1,10 +1,10 @@
-extern crate chrono;
-use chrono::{DateTime, Local, NaiveDateTime, Utc};
 /// This file is a copy of [solar.c](https://github.com/jonls/redshift/blob/master/src/solar.c) from redshift.
 ///
 /// This module makes extensive use of the [Julian Day notation](https://en.wikipedia.org/wiki/Julian_day)
 /// to measure elapsed days between events and in calculations.
+use chrono::{DateTime, Local, NaiveDateTime, Utc};
 use std::collections::HashMap;
+
 /* Ported from javascript code by U.S. Department of Commerce,
 National Oceanic & Atmospheric Administration:
 http://www.srrb.noaa.gov/highlights/sunrise/calcdetails.html
@@ -53,37 +53,145 @@ impl SolarTime {
     }
 }
 
-fn generate_time_angles() -> HashMap<SolarTime, f64> {
-    let mut ret: HashMap<SolarTime, f64> = HashMap::new();
-    ret.insert(
-        SolarTime::AstroDawn,
-        (-90.0 + ASTRO_TWILIGHT_ELEV).to_radians(),
-    );
-    ret.insert(
-        SolarTime::NautDawn,
-        (-90.0 + NAUT_TWILIGHT_ELEV).to_radians(),
-    );
-    ret.insert(
-        SolarTime::CivilDawn,
-        (-90.0 + CIVIL_TWILIGHT_ELEV).to_radians(),
-    );
-    ret.insert(SolarTime::Sunrise, (-90.0 + DAYTIME_ELEV).to_radians());
-    ret.insert(SolarTime::Noon, 0.0_f64.to_radians());
-    ret.insert(SolarTime::Sunset, (90.0 - DAYTIME_ELEV).to_radians());
-    ret.insert(
-        SolarTime::CivilDusk,
-        (90.0 - CIVIL_TWILIGHT_ELEV).to_radians(),
-    );
-    ret.insert(
-        SolarTime::NautDusk,
-        (90.0 - NAUT_TWILIGHT_ELEV).to_radians(),
-    );
-    ret.insert(
-        SolarTime::AstroDusk,
-        (90.0 - ASTRO_TWILIGHT_ELEV).to_radians(),
-    );
+#[derive(Debug)]
+pub struct Timetable {
+    angles: HashMap<SolarTime, f64>,
+    date: f64,
+    lat: f64,
+    lon: f64,
+    timetable: HashMap<SolarTime, f64>,
+}
 
-    ret
+impl Default for Timetable {
+    fn default() -> Self {
+        Self {
+            angles: HashMap::new(),
+            date: 0.0,
+            lat: 0.0,
+            lon: 0.0,
+            timetable: HashMap::new(),
+        }
+    }
+}
+
+impl Timetable {
+    /// Generates a `Map<SolarTime, f64>` contaning, for each part of the day, the azimuth angle of the sun
+    fn generate_time_angles(&self) -> HashMap<SolarTime, f64> {
+        let mut ret: HashMap<SolarTime, f64> = HashMap::new();
+        ret.insert(
+            SolarTime::AstroDawn,
+            (-90.0 + ASTRO_TWILIGHT_ELEV).to_radians(),
+        );
+        ret.insert(
+            SolarTime::NautDawn,
+            (-90.0 + NAUT_TWILIGHT_ELEV).to_radians(),
+        );
+        ret.insert(
+            SolarTime::CivilDawn,
+            (-90.0 + CIVIL_TWILIGHT_ELEV).to_radians(),
+        );
+        ret.insert(SolarTime::Sunrise, (-90.0 + DAYTIME_ELEV).to_radians());
+        ret.insert(SolarTime::Noon, 0.0_f64.to_radians());
+        ret.insert(SolarTime::Sunset, (90.0 - DAYTIME_ELEV).to_radians());
+        ret.insert(
+            SolarTime::CivilDusk,
+            (90.0 - CIVIL_TWILIGHT_ELEV).to_radians(),
+        );
+        ret.insert(
+            SolarTime::NautDusk,
+            (90.0 - NAUT_TWILIGHT_ELEV).to_radians(),
+        );
+        ret.insert(
+            SolarTime::AstroDusk,
+            (90.0 - ASTRO_TWILIGHT_ELEV).to_radians(),
+        );
+
+        ret
+    }
+
+    /// Generates a `Map<SolarTime, f64>` which contains for all solar events the epoch (seconds)
+    /// at which they will occur, given the current date, latitude and longitude
+    fn generate_timetable(&self) -> HashMap<SolarTime, f64> {
+        let mut ret: HashMap<SolarTime, f64> = HashMap::new();
+
+        // Calculate Julian day
+        let jd = jd_from_epoch(self.date);
+
+        // Calculate Julian century
+        let jdn: f64 = jd.round();
+        let t: f64 = jcent_from_jd(jdn);
+
+        // Calculate apparent solar noon
+        let sol_noon: f64 = time_of_solar_noon(t, self.lon);
+        let j_noon: f64 = jdn - 0.5 + sol_noon / 1440.0;
+        let t_noon: f64 = jcent_from_jd(j_noon);
+
+        // Calulate absolute time of other phenomena
+        for st in SolarTime::iterator() {
+            let angle: f64 = self.angles.get(&st).unwrap_or(&0.0).to_owned();
+            let offset: f64 = time_of_solar_elevation(t, t_noon, self.lat, self.lon, angle);
+            ret.insert(st, epoch_from_jd(jdn - 0.5 + offset / 1440.0));
+        }
+
+        // Insert solar noon
+        ret.insert(SolarTime::Noon, epoch_from_jd(j_noon));
+
+        // Calculate solar midnight
+        ret.insert(SolarTime::Midnight, epoch_from_jd(j_noon + 0.5));
+
+        ret
+    }
+
+    /// Constructor for Timetable
+    /// - date: A date in Unix epoch (seconds)
+    /// - lat: Latitude of location
+    /// - lon: Longitude of location
+    pub fn new(date: f64, lat: f64, lon: f64) -> Self {
+        let mut ret = Self::default();
+        ret.angles = ret.generate_time_angles();
+        ret.date = date;
+        ret.lat = lat;
+        ret.lon = lon;
+        ret.timetable = ret.generate_timetable();
+
+        ret
+    }
+
+    /// Simple function to retrieve only sunset and sunrise times
+    /// Returns a tuple (sunrise, sunset)
+    pub fn get_sunrise_sunset(&self) -> (String, String) {
+        // Calculate GMT offset in seconds
+        let offset: i64 = calculate_gmt(self.lon) * 3600;
+
+        // Index into the HashMap using SolarTime Enum
+        let sunrise: String = unix_to_normal_time(
+            self.timetable.get(&SolarTime::Sunrise).unwrap().round() as i64,
+            offset,
+        );
+        let sunset: String = unix_to_normal_time(
+            self.timetable.get(&SolarTime::Sunset).unwrap().round() as i64,
+            offset,
+        );
+
+        // Return tuple of sunsrise and sunset times
+        (sunrise, sunset)
+    }
+
+    /// Sets a new date for the timetable and regenerates it with the same coordinates
+    /// - epoch: a Unix epoch in seconds
+    pub fn set_date(&mut self, epoch: f64) {
+        self.date = epoch;
+        self.timetable = self.generate_timetable();
+    }
+
+    /// Returns a rough (but decently precise) number of minutes passed since the last midnight event
+    pub fn minutes_since_midnight(&self) -> i64 {
+        let day: f64 = 60.0 * 60.0 * 24.0;
+        let past_midnight: f64 = self.timetable.get(&SolarTime::Midnight).unwrap().round() - day;
+        let diff_seconds: f64 = self.date - past_midnight;
+
+        (diff_seconds / 60.0).round() as i64
+    }
 }
 
 /// Calculates the Unix epoch from a Julian day
@@ -304,71 +412,10 @@ pub fn solar_elevation(date: f64, lat: f64, lon: f64) -> f64 {
     ret.to_degrees()
 }
 
-// Generates a `Map<SolarTime, f64>` which contains for all solar events the epoch (seconds)
-/// at which they will occur, given the current date, latitude and longitude
-/// - date: Seconds since unix epoch
-/// - lat: Latitude of location
-/// - lon: Longitude of location
-pub fn solar_timetable(date: f64, lat: f64, lon: f64) -> HashMap<SolarTime, f64> {
-    let mut ret: HashMap<SolarTime, f64> = HashMap::new();
-    let angles: HashMap<SolarTime, f64> = generate_time_angles();
-
-    // Calculate Julian day
-    let jd = jd_from_epoch(date);
-
-    // Calculate Julian century
-    let jdn: f64 = jd.round();
-    let t: f64 = jcent_from_jd(jdn);
-
-    // Calculate apparent solar noon
-    let sol_noon: f64 = time_of_solar_noon(t, lon);
-    let j_noon: f64 = jdn - 0.5 + sol_noon / 1440.0;
-    let t_noon: f64 = jcent_from_jd(j_noon);
-
-    // Calulate absoute time of other phenomena
-    for st in SolarTime::iterator() {
-        let angle: f64 = angles.get(&st).unwrap_or(&0.0).to_owned();
-        let offset: f64 = time_of_solar_elevation(t, t_noon, lat, lon, angle);
-        ret.insert(st, epoch_from_jd(jdn - 0.5 + offset / 1440.0));
-    }
-
-    // Insert solar noon
-    ret.insert(SolarTime::Noon, epoch_from_jd(j_noon));
-
-    // Calculate solar midnight
-    ret.insert(SolarTime::Midnight, epoch_from_jd(j_noon + 0.5));
-
-    ret
-}
-
 /// Roughly calculates the GMT offset (in hours) for a given longitude, both negative and positive
 //// - lon: Longitude of location
 fn calculate_gmt(lon: f64) -> i64 {
     (lon.round() * 24.0 / 360.0) as i64
-}
-
-/// Simple function to retrieve only sunset and sunrise times
-/// - lat: Latitude of location
-/// - lon: Longitude of location
-/// Returns a tuple (sunrise, sunset)
-pub fn get_sunrise_sunset(lat: f64, lon: f64) -> (String, String) {
-    // Get the UNIX time
-    let unixtime = DateTime::timestamp(&Utc::now());
-
-    // Get the times of major events
-    let tt: HashMap<SolarTime, f64> = solar_timetable(unixtime as f64, lat, lon);
-
-    // Calculate offset in seconds
-    let offset: i64 = calculate_gmt(lon) * 3600;
-
-    // Index into the HashMap using SolarTime Enum
-    let sunrise: String =
-        unix_to_normal_time(tt.get(&SolarTime::Sunrise).unwrap().round() as i64, offset);
-    let sunset: String =
-        unix_to_normal_time(tt.get(&SolarTime::Sunset).unwrap().round() as i64, offset);
-
-    // Return tuple of sunsrise and sunset times
-    (sunrise, sunset)
 }
 
 /// Converts UNIX seconds to a human readable format (HH:MM:ss)
