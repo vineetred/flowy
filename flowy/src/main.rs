@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     // Runs forever
     let config = flowy::get_config()?;
-    flowy::set_times(config);
+    flowy::set_times(config)?;
     // Never reaches this but needed for Result return
     Ok(())
 }

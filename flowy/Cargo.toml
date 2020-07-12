@@ -23,7 +23,7 @@ flate2 = "1.0.16"
 tar = "0.4.29"
 directories-next = "1.0"
 chrono = "0.4"
-ureq = { version = "*", features = ["json"] }
+ureq = { version = "1.3.0", features = ["json"] }
 
 [package.metadata.deb]
 maintainer = "Vineet Reddy <vineetreddy@live.com>"

@@ -67,7 +67,10 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
     files.sort();
     Ok(files)
 }
-
+/// Does esentially the same thing as generate_config
+/// Only runs when sunrise and sunset times
+/// need to be accounted for
+/// Takes lat and long of a location along with the wallpaper path
 pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box<dyn Error>> {
     let mut day_walls = get_dir(path, "DAY")?;
     let night_walls = get_dir(path, "NIGHT")?;
@@ -143,7 +146,7 @@ fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
 
 // TODO - Someday, add some Result error return here
 /// The main function that reads the config and runs the daemon
-pub fn set_times(config: Config) {
+pub fn set_times(config: Config) -> Result<(), Box<dyn Error>>{
     let walls = config.walls;
     let times = config.times;
     println!("Times - {:#?}", &times);
@@ -151,9 +154,9 @@ pub fn set_times(config: Config) {
 
     let desktop_envt = DesktopEnvt::new().expect("Desktop envt could not be determined");
 
-    // set current wallpaper
-    let current_index = get_current_wallpaper_idx(walls.len());
-    desktop_envt.set_wallpaper(&walls[current_index]).unwrap();
+    // Set current wallpaper
+    let current_index = get_current_wallpaper_idx(&times)?;
+    desktop_envt.set_wallpaper(&walls[current_index])?;
 
     let mut scheduler = Scheduler::new();
     for (time, wall) in times.into_iter().zip(walls) {
@@ -168,15 +171,24 @@ pub fn set_times(config: Config) {
         thread::sleep(Duration::from_secs(60));
     }
 }
-
-/// Returns the index of the current wallpaper
-/// depending on the number of wallpapers and the time of day.
-fn get_current_wallpaper_idx(wall_len: usize) -> usize {
-    const SECS_PER_DAY: u32 = 60 * 60 * 24;
-
-    let time = Local::now().time();
-    let time_relative = time.num_seconds_from_midnight() as f32 / SECS_PER_DAY as f32;
-    let index = (wall_len as f32 * time_relative) as usize;
-    // prevent overflow during leap seconds:
-    index.min(wall_len - 1)
+/// Returns the index of the wallpaper path which is
+/// closest to the current time
+fn get_current_wallpaper_idx(wall_len: &Vec<String>) -> Result<usize, Box<dyn Error>> {
+    // Get the current time
+    let curr_time = Local::now().time();
+    let mut global_min = 1440;
+    let mut index  = 0;
+    for (i, time) in wall_len.into_iter().enumerate() {
+        // Get the difference in absolute minutes
+        let time = chrono::NaiveTime::parse_from_str(&time, "%H:%M")?;
+        let min = curr_time.signed_duration_since(time).num_minutes().abs();
+        // Compare and see if lowest we have seen so far
+        if min < global_min {
+            global_min = min;
+            index = i;
+        }
+    }
+    // Return the index of the lowest 
+    // time difference entry in Config.toml we saw
+    Ok(index)
 }
