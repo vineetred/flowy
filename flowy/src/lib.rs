@@ -1,6 +1,6 @@
 // THIS MODULE HANDLES GENERATION OF THE CONFIG FILE
 // AND THE RUNNING OF THE DAEMON
-use chrono::{DateTime, Local, Utc};
+use chrono::{DateTime, Local, NaiveTime, Utc};
 use clokwerk::{Scheduler, TimeUnits};
 use directories_next::BaseDirs;
 use serde::{Deserialize, Serialize};
@@ -176,24 +176,36 @@ pub fn set_times(config: Config) -> Result<(), Box<dyn Error>> {
     }
 }
 
-/// Returns the index of the wallpaper path which is
-/// closest to the current time
-fn get_current_wallpaper_idx(wall_len: &Vec<String>) -> Result<usize, Box<dyn Error>> {
+/// Returns the index of the wallpaper which should be displayed now.
+///
+/// For example, if the times are "00:00", "01:00" and "02:00", the first image
+/// should be shown from 00:00 to 00:59 and the second image from 01:00 to 01:59.
+///
+/// Therefore, this function returns the index of the _last_ time that isn't
+/// greater than the current time.
+fn get_current_wallpaper_idx(wall_times: &[String]) -> Result<usize, Box<dyn Error>> {
+    if wall_times.is_empty() {
+        panic!("Array of times can't be empty");
+    }
+
     // Get the current time
     let curr_time = Local::now().time();
-    let mut global_min = 1440;
+
+    // calculate index + 1
     let mut index = 0;
-    for (i, time) in wall_len.into_iter().enumerate() {
-        // Get the difference in absolute minutes
-        let time = chrono::NaiveTime::parse_from_str(&time, "%H:%M")?;
-        let min = curr_time.signed_duration_since(time).num_minutes().abs();
-        // Compare and see if lowest we have seen so far
-        if min < global_min {
-            global_min = min;
-            index = i;
+    for time in wall_times {
+        let time = NaiveTime::parse_from_str(&time, "%H:%M")?;
+        if time > curr_time {
+            break;
         }
+        index += 1;
     }
-    // Return the index of the lowest
-    // time difference entry in Config.toml we saw
-    Ok(index)
+    if index == 0 {
+        // The first time should ALWAYS be "00:00". If not, this can happen:
+        panic!(
+            "Current time ({:?}) is earlier than first wallpaper time ({:?})",
+            curr_time, wall_times[0]
+        );
+    }
+    Ok(index - 1)
 }
