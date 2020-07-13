@@ -82,9 +82,9 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
     let sunset = tt.get(&solar::SolarTime::Sunset).unwrap().round() as i64;
 
     // Day length in seconds
-    let day_len = sunset - sunrise;
+    let day_len = (sunset - sunrise) % 86400;
     // Night length in seconds
-    let night_len = 86400 - day_len;
+    let night_len = (86400 - day_len) % 86400;
     // Offset in seconds for each wallpaper change during the day
     let day_div = day_len / day_walls.len() as i64;
     // Offset in seconds for each wallpaper change during the night
@@ -117,13 +117,13 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
 /// Generates the config file. Takes the wallpaper folder path as args.
 pub fn generate_config(path: &Path) -> Result<(), Box<dyn Error>> {
     let walls = get_dir(path, "")?;
-    let length = walls.len();
-    let div = 1440 / length;
+    // Offset in seconds for each wallpaper
+    let div = 86400 / walls.len();
     let mut times = Vec::new();
-    let mut start_sec = 0;
-    for _ in 0..length {
-        times.push(format!("{:02}:{:02}", start_sec / 60, start_sec % 60));
-        start_sec += div;
+
+    for i in 0..walls.len() {
+        let offset = div * i;
+        times.push(format!("{:02}:{:02}", offset / 3600, (offset / 60) % 60));
     }
 
     let config = Config { times, walls };
