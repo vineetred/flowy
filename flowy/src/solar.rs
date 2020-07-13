@@ -156,14 +156,24 @@ impl Timetable {
         ret
     }
 
+    /// Returns the time of a solar event contained in the internal `Map`
+    /// - st: The SolarTime of interest
+    pub fn get(&self, st: &SolarTime) -> std::option::Option<&f64> {
+        self.timetable.get(st)
+    }
+
     /// Simple function to retrieve only sunset and sunrise times
     /// Returns a tuple (sunrise, sunset)
     pub fn get_sunrise_sunset(&self) -> (String, String) {
         // Index into the HashMap using SolarTime Enum
         let sunrise: String =
-            unix_to_normal_time(self.timetable.get(&SolarTime::Sunrise).unwrap().round() as i64);
+            unix_to_local(self.timetable.get(&SolarTime::Sunrise).unwrap().round() as i64)
+                .format("%H:%M:%S")
+                .to_string();
         let sunset: String =
-            unix_to_normal_time(self.timetable.get(&SolarTime::Sunset).unwrap().round() as i64);
+            unix_to_local(self.timetable.get(&SolarTime::Sunset).unwrap().round() as i64)
+                .format("%H:%M:%S")
+                .to_string();
 
         // Return tuple of sunsrise and sunset times
         (sunrise, sunset)
@@ -406,14 +416,14 @@ pub fn solar_elevation(date: f64, lat: f64, lon: f64) -> f64 {
 
 /// Converts UNIX seconds to a human readable format (HH:MM:ss)
 /// - time: absolute datetime (in epoch seconds) to convert
-fn unix_to_normal_time(time: i64) -> String {
+pub fn unix_to_local(time: i64) -> DateTime<Local> {
     let naive: NaiveDateTime = NaiveDateTime::from_timestamp(time, 0);
     let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
     let converted: DateTime<Local> = DateTime::from(datetime);
-    let newdate: String = converted.format("%H:%M:%S").to_string();
+    // let newdate: String = converted.format("%H:%M:%S").to_string();
 
     // Return the time in string type
-    newdate
+    converted
 }
 
 pub fn time_to_mins(time: String) -> u32 {
@@ -421,4 +431,52 @@ pub fn time_to_mins(time: String) -> u32 {
     let h1 = time.hour();
     let m1 = time.minute();
     h1 * 60 + m1
+}
+
+#[cfg(test)]
+mod test_solar {
+    use super::*;
+
+    const MILAN: (f64, f64) = (45.4627, 9.1077);
+
+    #[test]
+    fn test_prev_midnight() {
+        let epoch: f64 = DateTime::timestamp(&Utc::now()) as f64;
+        // Calculate Julian day
+        let jd = jd_from_epoch(epoch);
+
+        // Calculate Julian century
+        let jdn: f64 = jd.round();
+        let t: f64 = jcent_from_jd(jdn);
+
+        // Calculate apparent solar noon
+        let sol_noon: f64 = time_of_solar_noon(t, MILAN.1);
+        let j_noon: f64 = jdn - 0.5 + sol_noon / 1440.0;
+
+        let next_midnight = epoch_from_jd(j_noon + 0.5).round() as i64;
+        let prev_midnight = epoch_from_jd(j_noon - 0.5).round() as i64;
+
+        println!(
+            "Next midnight: {}",
+            unix_to_local(next_midnight).format("%H:%M:%S").to_string()
+        );
+        println!(
+            "Prev midnight: {}",
+            unix_to_local(prev_midnight).format("%H:%M:%S").to_string()
+        );
+    }
+
+    #[test]
+    fn test_lengths() {
+        let epoch: f64 = DateTime::timestamp(&Utc::now()) as f64;
+        let tt: Timetable = Timetable::new(epoch, MILAN.0, MILAN.1);
+        let sunrise = tt.get(&SolarTime::Sunrise).unwrap().round() as u32;
+        let sunset = tt.get(&SolarTime::Sunset).unwrap().round() as u32;
+
+        // Day length in seconds
+        let day_len = sunset - sunrise;
+        let night_len = 86400 - day_len;
+        println!("Day: {} minutes", day_len / 60);
+        println!("Night: {} minutes", night_len / 60);
+    }
 }
