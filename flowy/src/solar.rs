@@ -162,18 +162,12 @@ impl Timetable {
         self.timetable.get(st)
     }
 
-    /// Simple function to retrieve only sunset and sunrise times
-    /// Returns a tuple (sunrise, sunset)
-    pub fn get_sunrise_sunset(&self) -> (String, String) {
+    /// Simple utility function to retrieve only sunset and sunrise times
+    /// Returns a tuple (sunrise, sunset) as i64
+    pub fn get_sunrise_sunset(&self) -> (i64, i64) {
         // Index into the HashMap using SolarTime Enum
-        let sunrise: String =
-            unix_to_local(self.timetable.get(&SolarTime::Sunrise).unwrap().round() as i64)
-                .format("%H:%M:%S")
-                .to_string();
-        let sunset: String =
-            unix_to_local(self.timetable.get(&SolarTime::Sunset).unwrap().round() as i64)
-                .format("%H:%M:%S")
-                .to_string();
+        let sunrise: i64 = self.timetable.get(&SolarTime::Sunrise).unwrap().round() as i64;
+        let sunset: i64 = self.timetable.get(&SolarTime::Sunset).unwrap().round() as i64;
 
         // Return tuple of sunsrise and sunset times
         (sunrise, sunset)

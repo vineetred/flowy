@@ -78,8 +78,7 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
     let unixtime = DateTime::timestamp(&Utc::now()) as f64;
 
     let tt = solar::Timetable::new(unixtime, lat, long);
-    let sunrise = tt.get(&solar::SolarTime::Sunrise).unwrap().round() as i64;
-    let sunset = tt.get(&solar::SolarTime::Sunset).unwrap().round() as i64;
+    let (sunrise, sunset) = tt.get_sunrise_sunset();
 
     // Day length in seconds
     let day_len = (sunset - sunrise) % 86400;
@@ -92,13 +91,13 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
     let mut times = Vec::new();
 
     for i in 0..day_walls.len() {
-        let absolute = sunrise + (i as i64) * day_div;
+        let absolute = sunrise + (day_div * (i as i64));
         let time_str: String = solar::unix_to_local(absolute).format("%H:%M").to_string();
         times.push(time_str);
     }
 
     for i in 0..night_walls.len() {
-        let absolute = sunset + (i as i64) * night_div;
+        let absolute = sunset + (night_div * (i as i64));
         let time_str: String = solar::unix_to_local(absolute).format("%H:%M").to_string();
         times.push(time_str);
     }
