@@ -1,6 +1,6 @@
 // THIS MODULE HANDLES GENERATION OF THE CONFIG FILE
 // AND THE RUNNING OF THE DAEMON
-use chrono::{DateTime, Local, Timelike};
+use chrono::{DateTime, Local, Utc};
 use clokwerk::{Scheduler, TimeUnits};
 use directories_next::BaseDirs;
 use serde::{Deserialize, Serialize};
@@ -67,6 +67,7 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
     files.sort();
     Ok(files)
 }
+
 /// Does esentially the same thing as generate_config
 /// Only runs when sunrise and sunset times
 /// need to be accounted for
@@ -74,28 +75,31 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
 pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box<dyn Error>> {
     let mut day_walls = get_dir(path, "DAY")?;
     let night_walls = get_dir(path, "NIGHT")?;
-    let unixtime = DateTime::timestamp(&chrono::offset::Utc::now()) as f64;
+    let unixtime = DateTime::timestamp(&Utc::now()) as f64;
 
     let tt = solar::Timetable::new(unixtime, lat, long);
     let (sunrise, sunset) = tt.get_sunrise_sunset();
-    println!("Sunrise {} Sunset {}", sunrise, sunset);
-    let mut sunrise = solar::time_to_mins(sunrise);
-    let mut sunset = solar::time_to_mins(sunset);
 
-    let day_len = ((sunset as i32 - sunrise as i32) % 1440) as u32;
-    let night_len = 1440 - day_len;
-    let day_div = day_len / day_walls.len() as u32;
-    let night_div = night_len / night_walls.len() as u32;
+    // Day length in seconds
+    let day_len = (sunset - sunrise) % 86400;
+    // Night length in seconds
+    let night_len = (86400 - day_len) % 86400;
+    // Offset in seconds for each wallpaper change during the day
+    let day_div = day_len / day_walls.len() as i64;
+    // Offset in seconds for each wallpaper change during the night
+    let night_div = night_len / night_walls.len() as i64;
     let mut times = Vec::new();
 
-    for _ in 0..day_walls.len() {
-        times.push(format!("{}:{}", sunrise / 60, sunrise % 60));
-        sunrise = (sunrise + day_div) % 1440;
+    for i in 0..day_walls.len() {
+        let absolute = sunrise + (day_div * (i as i64));
+        let time_str: String = solar::unix_to_local(absolute).format("%H:%M").to_string();
+        times.push(time_str);
     }
 
-    for _ in 0..night_walls.len() {
-        times.push(format!("{}:{}", sunset / 60, sunset % 60));
-        sunset = (sunset + night_div) % 1440;
+    for i in 0..night_walls.len() {
+        let absolute = sunset + (night_div * (i as i64));
+        let time_str: String = solar::unix_to_local(absolute).format("%H:%M").to_string();
+        times.push(time_str);
     }
 
     day_walls.extend(night_walls);
@@ -112,13 +116,13 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
 /// Generates the config file. Takes the wallpaper folder path as args.
 pub fn generate_config(path: &Path) -> Result<(), Box<dyn Error>> {
     let walls = get_dir(path, "")?;
-    let length = walls.len();
-    let div = 1440 / length;
+    // Offset in seconds for each wallpaper
+    let div = 86400 / walls.len();
     let mut times = Vec::new();
-    let mut start_sec = 0;
-    for _ in 0..length {
-        times.push(format!("{:02}:{:02}", start_sec / 60, start_sec % 60));
-        start_sec += div;
+
+    for i in 0..walls.len() {
+        let offset = div * i;
+        times.push(format!("{:02}:{:02}", offset / 3600, (offset / 60) % 60));
     }
 
     let config = Config { times, walls };
@@ -146,7 +150,7 @@ fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
 
 // TODO - Someday, add some Result error return here
 /// The main function that reads the config and runs the daemon
-pub fn set_times(config: Config) -> Result<(), Box<dyn Error>>{
+pub fn set_times(config: Config) -> Result<(), Box<dyn Error>> {
     let walls = config.walls;
     let times = config.times;
     println!("Times - {:#?}", &times);
@@ -171,13 +175,14 @@ pub fn set_times(config: Config) -> Result<(), Box<dyn Error>>{
         thread::sleep(Duration::from_secs(60));
     }
 }
+
 /// Returns the index of the wallpaper path which is
 /// closest to the current time
 fn get_current_wallpaper_idx(wall_len: &Vec<String>) -> Result<usize, Box<dyn Error>> {
     // Get the current time
     let curr_time = Local::now().time();
     let mut global_min = 1440;
-    let mut index  = 0;
+    let mut index = 0;
     for (i, time) in wall_len.into_iter().enumerate() {
         // Get the difference in absolute minutes
         let time = chrono::NaiveTime::parse_from_str(&time, "%H:%M")?;
@@ -188,7 +193,7 @@ fn get_current_wallpaper_idx(wall_len: &Vec<String>) -> Result<usize, Box<dyn Er
             index = i;
         }
     }
-    // Return the index of the lowest 
+    // Return the index of the lowest
     // time difference entry in Config.toml we saw
     Ok(index)
 }

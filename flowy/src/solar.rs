@@ -156,14 +156,18 @@ impl Timetable {
         ret
     }
 
-    /// Simple function to retrieve only sunset and sunrise times
-    /// Returns a tuple (sunrise, sunset)
-    pub fn get_sunrise_sunset(&self) -> (String, String) {
+    /// Returns the time of a solar event contained in the internal `Map`
+    /// - st: The SolarTime of interest
+    pub fn get(&self, st: &SolarTime) -> std::option::Option<&f64> {
+        self.timetable.get(st)
+    }
+
+    /// Simple utility function to retrieve only sunset and sunrise times
+    /// Returns a tuple (sunrise, sunset) as i64
+    pub fn get_sunrise_sunset(&self) -> (i64, i64) {
         // Index into the HashMap using SolarTime Enum
-        let sunrise: String =
-            unix_to_normal_time(self.timetable.get(&SolarTime::Sunrise).unwrap().round() as i64);
-        let sunset: String =
-            unix_to_normal_time(self.timetable.get(&SolarTime::Sunset).unwrap().round() as i64);
+        let sunrise: i64 = self.timetable.get(&SolarTime::Sunrise).unwrap().round() as i64;
+        let sunset: i64 = self.timetable.get(&SolarTime::Sunset).unwrap().round() as i64;
 
         // Return tuple of sunsrise and sunset times
         (sunrise, sunset)
@@ -406,14 +410,14 @@ pub fn solar_elevation(date: f64, lat: f64, lon: f64) -> f64 {
 
 /// Converts UNIX seconds to a human readable format (HH:MM:ss)
 /// - time: absolute datetime (in epoch seconds) to convert
-fn unix_to_normal_time(time: i64) -> String {
+pub fn unix_to_local(time: i64) -> DateTime<Local> {
     let naive: NaiveDateTime = NaiveDateTime::from_timestamp(time, 0);
     let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
     let converted: DateTime<Local> = DateTime::from(datetime);
-    let newdate: String = converted.format("%H:%M:%S").to_string();
+    // let newdate: String = converted.format("%H:%M:%S").to_string();
 
     // Return the time in string type
-    newdate
+    converted
 }
 
 pub fn time_to_mins(time: String) -> u32 {
