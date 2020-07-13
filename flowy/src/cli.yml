@@ -27,3 +27,4 @@ args:
         takes_value: true
         multiple: true
         number_of_values: 3
+        allow_hyphen_values: true
