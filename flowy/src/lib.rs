@@ -67,6 +67,7 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
     files.sort();
     Ok(files)
 }
+
 /// Does esentially the same thing as generate_config
 /// Only runs when sunrise and sunset times
 /// need to be accounted for
@@ -175,6 +176,7 @@ pub fn set_times(config: Config) -> Result<(), Box<dyn Error>> {
         thread::sleep(Duration::from_secs(60));
     }
 }
+
 /// Returns the index of the wallpaper path which is
 /// closest to the current time
 fn get_current_wallpaper_idx(wall_len: &Vec<String>) -> Result<usize, Box<dyn Error>> {
