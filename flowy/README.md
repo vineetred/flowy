@@ -37,6 +37,7 @@
 ## Solar - Sunrise and Sunset
 * Flowy can take into account your location's sunrise and sunset timings.
 * This option can be used by running ```flowy --solar /path/to/dir lat lon``` and passing flowy the path to the wallpapers, latitiude, and longitude of your location.
+* Note that south latitudes and west longitudes are represented using negative numbers.
 * Keep in mind that the wallpapers in the path must be segregated by adding ```DAY``` or ```NIGHT``` tags within the wallpaper names. This is done so that flowy knows which wallpapers to show during the day and which wallpapers to show during the night. The normal sequential numbering rules mentioned in the ```Wallpapers directory``` subsections still apply.
 * Example naming scheme - ```DAY-01.jpg, DAY-02.jpg, NIGHT-03.jpg, NIGHT-04.jpg,...```.
 * If you do not want to segregate, use flowy in the normal mode (```--dir```).
