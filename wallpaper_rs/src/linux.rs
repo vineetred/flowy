@@ -173,18 +173,21 @@ fn is_gnome_compliant(desktop: &str) -> bool {
 }
 
 fn kde_get() -> Result<PathBuf, Box<dyn Error>> {
-    // Getting current directory and
-    // appending the KDE wallpaper
-    // repo to the end of the path
-    let mut path = std::env::current_dir()?.display().to_string();
-    path.push_str("/plasma-org.kde.plasma.desktop-appletsrc");
+    let mut config_dir = dirs_next::config_dir().ok_or("Could not determine config directory")?;
+    config_dir.push("plasma-org.kde.plasma.desktop-appletsrc");
+
     // Opening the file into a buffer reader
-    let file = std::fs::File::open(path)?;
+    let file = std::fs::File::open(config_dir)?;
+
     let reader = std::io::BufReader::new(file);
     for line in reader.lines() {
         let line = line?;
         if line.starts_with("Image=") {
-            return Ok(line[6..].trim().into());
+            let mut line = line[6..].trim();
+            if line.starts_with("file://") {
+                line = &line[7..];
+            }
+            return Ok(PathBuf::from(line));
         }
     }
 
