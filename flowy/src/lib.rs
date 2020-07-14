@@ -191,7 +191,7 @@ fn get_current_wallpaper_idx(wall_times: &[String]) -> Result<usize, Box<dyn Err
     // Get the current time
     let curr_time = Local::now().time();
 
-    // calculate index + 1
+    // Looping through times to compare all of them
     let mut index = 0;
     for time in wall_times {
         let time = NaiveTime::parse_from_str(&time, "%H:%M")?;
@@ -201,11 +201,8 @@ fn get_current_wallpaper_idx(wall_times: &[String]) -> Result<usize, Box<dyn Err
         index += 1;
     }
     if index == 0 {
-        // The first time should ALWAYS be "00:00". If not, this can happen:
-        panic!(
-            "Current time ({:?}) is earlier than first wallpaper time ({:?})",
-            curr_time, wall_times[0]
-        );
+        index = wall_times.len() - 1;
+        return Ok(index);
     }
     Ok(index - 1)
 }
