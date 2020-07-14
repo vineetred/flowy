@@ -3,6 +3,8 @@
 use std::error::Error;
 use std::path::PathBuf;
 
+// Only one of these three sets gets compiled based on the
+// OS being run on
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "linux")]
