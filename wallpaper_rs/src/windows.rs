@@ -1,8 +1,10 @@
+use super::Desktop;
 use std::error::Error;
 use std::ffi::OsStr;
-use std::io::Error::last_os_error;
+use std::io;
 use std::os::raw::c_void;
 use std::os::windows::ffi::OsStrExt;
+use std::path::PathBuf;
 use winapi::um::winuser::{
     SystemParametersInfoW, SPIF_SENDCHANGE, SPIF_UPDATEINIFILE, SPI_GETDESKWALLPAPER,
     SPI_SETDESKWALLPAPER,
@@ -33,7 +35,7 @@ impl Desktop for DesktopEnvt {
         if successful {
             Ok(())
         } else {
-            Err(last_os_error().into())
+            Err(io::Error::last_os_error().into())
         }
     }
 
@@ -57,7 +59,7 @@ impl Desktop for DesktopEnvt {
 
             Ok(String::from_utf16(buffer)?.into())
         } else {
-            Err(last_os_error().into())
+            Err(io::Error::last_os_error().into())
         }
     }
 }
