@@ -50,7 +50,7 @@
   * `/Users/Alice/Library/Preferences/flowy` on macOS
 
 ## Supported Environments
-* MacOS
+* **macOS**
 * **GNOME Based** - Ubuntu, Fedora, Pantheon
 * Linux Mint Cinnamon
 * Linux Mint MATE
@@ -58,6 +58,7 @@
 * XFCE
 * KDE
 * BSPWM (with feh)
+* **Windows** 7/8/10
 
 **TODO**
 * GUI
