@@ -3,6 +3,8 @@
 use std::error::Error;
 use std::path::PathBuf;
 
+// Only one of these three sets gets compiled based on the
+// OS being run on
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "linux")]
@@ -12,6 +14,11 @@ pub use linux::DesktopEnvt;
 mod macos;
 #[cfg(target_os = "macos")]
 pub use macos::DesktopEnvt;
+
+#[cfg(target_os = "windows")]
+mod windows;
+#[cfg(target_os = "windows")]
+pub use windows::DesktopEnvt;
 
 /// A trait implemented by desktop environments. It allows setting or getting a wallpaper.
 ///
