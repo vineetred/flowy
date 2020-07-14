@@ -152,7 +152,7 @@ impl Desktop for DesktopEnvt {
                     "/com/deepin/wrap/gnome/desktop/background/picture-uri",
                 ])
                 .output()?,
-            DesktopEnvt::KDE => return Ok(kde_get()?),
+            DesktopEnvt::KDE => return Ok(kde_get_wallpaper()?),
             DesktopEnvt::BSPWM => Command::new("sed")
                 .args(&[
                     "-n",
@@ -172,12 +172,16 @@ fn is_gnome_compliant(desktop: &str) -> bool {
     desktop.contains("GNOME") || desktop == "Unity" || desktop == "Pantheon"
 }
 
-fn kde_get() -> Result<PathBuf, Box<dyn Error>> {
-    let mut config_dir = dirs_next::config_dir().ok_or("Could not determine config directory")?;
-    config_dir.push("plasma-org.kde.plasma.desktop-appletsrc");
+/// Returns the absolute wallpaper path on KDE, if possible.
+///
+/// It reads the first line starting with "Image="
+/// in the file "~/.config/plasma-org.kde.plasma.desktop-appletsrc"
+fn kde_get_wallpaper() -> Result<PathBuf, Box<dyn Error>> {
+    let mut path = dirs_next::config_dir().ok_or("Could not determine config directory")?;
+    path.push("plasma-org.kde.plasma.desktop-appletsrc");
 
     // Opening the file into a buffer reader
-    let file = std::fs::File::open(config_dir)?;
+    let file = std::fs::File::open(path)?;
 
     let reader = std::io::BufReader::new(file);
     for line in reader.lines() {
