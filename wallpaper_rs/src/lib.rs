@@ -13,6 +13,11 @@ mod macos;
 #[cfg(target_os = "macos")]
 pub use macos::DesktopEnvt;
 
+#[cfg(target_os = "windows")]
+mod windows;
+#[cfg(target_os = "windows")]
+pub use windows::DesktopEnvt;
+
 /// A trait implemented by desktop environments. It allows setting or getting a wallpaper.
 ///
 /// On platforms where only one desktop environment exists (e.g. Windows, macOS), this can
