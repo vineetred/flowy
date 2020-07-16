@@ -73,6 +73,7 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
 /// need to be accounted for
 /// Takes lat and long of a location along with the wallpaper path
 pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box<dyn Error>> {
+    println!("<---- Solar Mode ---->");
     let mut day_walls = get_dir(path, "DAY")?;
     let night_walls = get_dir(path, "NIGHT")?;
     let unixtime = DateTime::timestamp(&Utc::now()) as f64;
@@ -115,6 +116,7 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
 
 /// Generates the config file. Takes the wallpaper folder path as args.
 pub fn generate_config(path: &Path) -> Result<(), Box<dyn Error>> {
+    println!("<---- Normal Mode ---->");
     let walls = get_dir(path, "")?;
     // Offset in seconds for each wallpaper
     let div = 86400 / walls.len();
