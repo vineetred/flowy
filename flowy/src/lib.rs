@@ -202,8 +202,8 @@ fn get_current_wallpaper_idx(wall_times: &[String]) -> Result<usize, Box<dyn Err
         }
         index += 1;
     }
-    
-    // In case the current time is lower that the first time, 
+
+    // In case the current time is lower that the first time,
     // we just loop back to the time before it
     if index == 0 {
         index = wall_times.len() - 1;

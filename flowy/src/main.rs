@@ -13,9 +13,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let preset = matches.value_of("preset");
     // Error checking for the Solar option
     if let Some(_) = matches.values_of("solar") {
+        // Loading up the args into a vector
         let solar: Vec<_> = matches.values_of("solar").unwrap().collect();
         flowy::generate_config_solar(
+            // Passing the Directory
             Path::new(solar[0]),
+            // Passing the lat long
             solar[1].parse::<f64>().unwrap(),
             solar[2].parse::<f64>().unwrap(),
         )?;

@@ -1,4 +1,3 @@
-// use reqwest
 use flate2::read::GzDecoder;
 use std::error::Error;
 use std::fs::File;
@@ -32,6 +31,8 @@ fn unpack_tar(src: &Path, dst: &Path) -> Result<(), Box<dyn Error>> {
 pub fn match_preset(preset: Option<&str>) -> Result<(), Box<dyn Error>> {
     match preset {
         None => (),
+        // As can be seen here, we only check if
+        // there is something after the preset flag
         Some(_) => {
             let config_path = flowy::get_config_dir()?;
 
