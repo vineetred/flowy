@@ -1,6 +1,6 @@
 // CLI Import
 use clap::{load_yaml, App};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 mod presets;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -14,6 +14,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Error checking for the Solar option
     if let Some(_) = matches.values_of("solar") {
         // Loading up the args into a vector
+        // Solar[0] - Directory
+        // Solar[1,2] - Lat Long
         let solar: Vec<_> = matches.values_of("solar").unwrap().collect();
         flowy::generate_config_solar(
             // Passing the Directory
