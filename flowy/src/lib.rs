@@ -74,10 +74,11 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
 /// Takes lat and long of a location along with the wallpaper path
 pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box<dyn Error>> {
     println!("<---- Solar Mode ---->");
+    // Checking for the night and day prefix
     let mut day_walls = get_dir(path, "DAY")?;
     let night_walls = get_dir(path, "NIGHT")?;
     let unixtime = DateTime::timestamp(&Utc::now()) as f64;
-
+    // Creating solar table based on time, lat, long
     let tt = solar::Timetable::new(unixtime, lat, long);
     let (sunrise, sunset) = tt.get_sunrise_sunset();
 
@@ -91,6 +92,7 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
     let night_div = night_len / night_walls.len() as i64;
     let mut times = Vec::new();
 
+    // Adding times and paths
     for i in 0..day_walls.len() {
         let absolute = sunrise + (day_div * (i as i64));
         let time_str: String = solar::unix_to_local(absolute).format("%H:%M").to_string();
@@ -102,12 +104,13 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
         let time_str: String = solar::unix_to_local(absolute).format("%H:%M").to_string();
         times.push(time_str);
     }
-
+    // Loading all the night paths to day paths
     day_walls.extend(night_walls);
     let config = Config {
         times,
         walls: day_walls,
     };
+    // Writing times and paths to config.toml
     let toml_string = toml::to_string(&config)?;
     std::fs::write(&get_config_path()?, toml_string)?;
 
