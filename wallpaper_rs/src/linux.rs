@@ -55,7 +55,8 @@ impl Desktop for DesktopEnvt {
             }
 
             DesktopEnvt::MATE => {
-                let mate_path = &path[7..];
+                let mate_path = path.replace("file://", "");
+
                 Command::new("dconf")
                     .args(&[
                         "write",
@@ -66,17 +67,50 @@ impl Desktop for DesktopEnvt {
             }
 
             DesktopEnvt::XFCE => {
-                let xfce_path = &path[7..];
-                Command::new("xfconf-query")
+                let path_unquoted = enquote::unquote(&path).unwrap();
+                let xfce_path = path_unquoted
+                    .strip_prefix("file://")
+                    .unwrap();
+                
+                // Get the raw output of xfconf-query for the wallpaper
+                let values_raw = Command::new("xfconf-query")
                     .args(&[
                         "-c",
                         "xfce4-desktop",
                         "-p",
-                        "/backdrop/screen0/monitor0/workspace0/last-image",
-                        "-s",
-                        &xfce_path,
+                        "/backdrop/screen0",
+                        "-lv",
                     ])
-                    .output()?;
+                    .output()
+                    .unwrap()
+                    .stdout;
+
+                // Filter out unwanted values (everything except */last-image)
+                let values_str = match std::str::from_utf8(&values_raw) {
+                    Ok(v) => v.to_string(),
+                    Err(_) => "/backdrop/screen0/monitor0/workspace0/last-image".to_string(),
+                };
+
+                // Collect the keys for the filtered values
+                let values_vec: Vec<&str> = values_str
+                    .split_whitespace()
+                    .step_by(2)
+                    .filter(|v| v.contains("last-image"))
+                    .collect();
+
+                // Set all the keys to the new wallpaper
+                for v in values_vec {
+                    Command::new("xfconf-query")
+                        .args(&[
+                            "-c",
+                            "xfce4-desktop",
+                            "-p",
+                            v,
+                            "-s",
+                            &xfce_path,
+                        ])
+                        .output()?;
+                }
             }
 
             DesktopEnvt::Deepin => {
