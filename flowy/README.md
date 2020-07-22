@@ -5,11 +5,11 @@
 
 ## Demo
 <p align="center">
-  <img src="https://github.com/vineetred/flowy/blob/master/demo2.gif?raw=true" alt="Flowy demo"/>
+  <img src="https://github.com/vineetred/flowy/blob/master/demo/demo2.gif?raw=true" alt="Flowy demo"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/vineetred/flowy/blob/master/demo.gif?raw=true" alt="Flowy demo"/>
+  <img src="https://github.com/vineetred/flowy/blob/master/demo/demo.gif?raw=true" alt="Flowy demo"/>
 </p>
 
 ## Usage
@@ -29,12 +29,6 @@
 * Once the installation is done, run the command ```systemctl --user start flowy.service``` to run the application.
 * Once installation is done and you would still like to change the directory, go to the systemd service file found at ```/etc/systemd/user``` and change the directory in that file.
 
-### Config File
-The location of the config directory depends on your operating system:
-* `~/.config/flowy` on Linux
-* `C:\User\Alice\AppData\Roaming\flowy` on Windows (Windows is not supported ATM)
-* `/Users/Alice/Library/Preferences/flowy` on macOS
-
 ## Wallpapers directory
 * The wallpapers inside the directory must be named sequentially.
 * For example, if you have 11 wallpapers, the names must be ```paper-01.jpg, paper-02.jpg...```.
@@ -43,7 +37,6 @@ The location of the config directory depends on your operating system:
 ## Solar - Sunrise and Sunset
 * Flowy can take into account your location's sunrise and sunset timings.
 * This option can be used by running ```flowy --solar /path/to/dir lat lon``` and passing flowy the path to the wallpapers, latitiude, and longitude of your location.
-* Note that south latitudes and west longitudes are represented using negative numbers.
 * Keep in mind that the wallpapers in the path must be segregated by adding ```DAY``` or ```NIGHT``` tags within the wallpaper names. This is done so that flowy knows which wallpapers to show during the day and which wallpapers to show during the night. The normal sequential numbering rules mentioned in the ```Wallpapers directory``` subsections still apply.
 * Example naming scheme - ```DAY-01.jpg, DAY-02.jpg, NIGHT-03.jpg, NIGHT-04.jpg,...```.
 * If you do not want to segregate, use flowy in the normal mode (```--dir```).
@@ -51,9 +44,13 @@ The location of the config directory depends on your operating system:
 ## Experimental
 * By default, flowy evenly sets the wallpaper change time based on the number of wallpapers there are. In case you would like to modify these times, it can be done so by editing the ```config.toml``` file found in the config directory. You need to comment the ```flowy::generate_config``` function call in ```main.rs``` and then build it after modifying the config file.
 
+  The location of the config directory depends on your operating system:
+  * `~/.config/flowy` on Linux
+  <!-- * `C:\User\Alice\AppData\Roaming\flowy` on Windows (Windows is not supported ATM) -->
+  * `/Users/Alice/Library/Preferences/flowy` on macOS
 
 ## Supported Environments
-* MacOS
+* **macOS**
 * **GNOME Based** - Ubuntu, Fedora, Pantheon
 * Linux Mint Cinnamon
 * Linux Mint MATE
@@ -61,7 +58,10 @@ The location of the config directory depends on your operating system:
 * XFCE
 * KDE
 * BSPWM (with feh)
+* **Windows** 7/8/10
 
 **TODO**
 * GUI
 * Match the stars given the location
+* Add support for other platforms, both UNIX and Windows.
+* Refactor OS related code to another file
