@@ -5,11 +5,11 @@
 
 ## Demo
 <p align="center">
-  <img src="https://github.com/vineetred/flowy/blob/master/demo2.gif?raw=true" alt="Flowy demo"/>
+  <img src="https://github.com/vineetred/flowy/blob/master/demo/demo2.gif?raw=true" alt="Flowy demo"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/vineetred/flowy/blob/master/demo.gif?raw=true" alt="Flowy demo"/>
+  <img src="https://github.com/vineetred/flowy/blob/master/demo/demo.gif?raw=true" alt="Flowy demo"/>
 </p>
 
 ## Usage

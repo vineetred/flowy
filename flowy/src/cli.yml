@@ -10,7 +10,6 @@ args:
         value_name: DIR PATH
         about: Tells flowy where your wallpapers are
         takes_value: true
-        # required: true
 
     - preset:
         short: pre
