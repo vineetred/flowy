@@ -55,10 +55,7 @@ impl Desktop for DesktopEnvt {
             }
 
             DesktopEnvt::MATE => {
-                let path_unquoted = enquote::unquote(&path).unwrap();
-                let mate_path = path_unquoted
-                    .strip_prefix("file://")
-                    .unwrap();
+                let mate_path = path.replace("file://", "");
 
                 Command::new("dconf")
                     .args(&[
