@@ -68,7 +68,7 @@ WantedBy=multi-user.target
 
   The location of the config directory depends on your operating system:
   * `~/.config/flowy` on Linux
-  * `C:\User\Alice\AppData\Roaming\flowy` on Windows (Windows is not supported ATM)
+  * `C:\User\Alice\AppData\Roaming\flowy` on Windows
   * `/Users/Alice/Library/Preferences/flowy` on macOS
 
 ## Supported Environments
