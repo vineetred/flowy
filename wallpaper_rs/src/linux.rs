@@ -14,6 +14,7 @@ pub enum DesktopEnvt {
     Deepin,
     KDE,
     BSPWM,
+    I3,
 }
 
 impl Desktop for DesktopEnvt {
@@ -29,6 +30,7 @@ impl Desktop for DesktopEnvt {
                 "Deepin" => DesktopEnvt::Deepin,
                 "KDE" => DesktopEnvt::KDE,
                 "bspwm" => DesktopEnvt::BSPWM,
+                "i3" => DesktopEnvt::I3,
                 _ => panic!("Unsupported Desktop Environment"),
             })
         }
@@ -146,7 +148,7 @@ impl Desktop for DesktopEnvt {
                     .output()?;
             }
 
-            DesktopEnvt::BSPWM => {
+            DesktopEnvt::BSPWM | DesktopEnvt::I3 => {
                 Command::new("feh")
                     .args(&["--bg-fill", &path.replace("\"", "")])
                     .output()?;
@@ -187,7 +189,7 @@ impl Desktop for DesktopEnvt {
                 ])
                 .output()?,
             DesktopEnvt::KDE => return Ok(kde_get_wallpaper()?),
-            DesktopEnvt::BSPWM => Command::new("sed")
+            DesktopEnvt::BSPWM | DesktopEnvt::I3 => Command::new("sed")
                 .args(&[
                     "-n",
                     "'s/feh.*\\('.*'\\)/\\1/gp'",
