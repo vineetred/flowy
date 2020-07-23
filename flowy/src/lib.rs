@@ -1,7 +1,6 @@
 // THIS MODULE HANDLES GENERATION OF THE CONFIG FILE
 // AND THE RUNNING OF THE DAEMON
 use chrono::{DateTime, Local, NaiveTime, Utc};
-use clokwerk::{Scheduler, TimeUnits};
 use directories_next::BaseDirs;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -74,6 +73,7 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
 /// Takes lat and long of a location along with the wallpaper path
 pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box<dyn Error>> {
     println!("<---- Solar Mode ---->");
+    println!("Lat: {} Long: {}", &lat, &long);
     // Checking for the night and day prefix
     let mut day_walls = get_dir(path, "DAY")?;
     let night_walls = get_dir(path, "NIGHT")?;
@@ -153,31 +153,32 @@ fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
     Ok(config_file)
 }
 
-// TODO - Someday, add some Result error return here
-/// The main function that reads the config and runs the daemon
+/// Parses the config file and runs the daemon
 pub fn set_times(config: Config) -> Result<(), Box<dyn Error>> {
     let walls = config.walls;
     let times = config.times;
     println!("Times - {:#?}", &times);
     println!("Paths - {:#?}", &walls);
-
+    // Will throw an error if Desktop Envt is not supported
     let desktop_envt = DesktopEnvt::new().expect("Desktop envt could not be determined");
-
-    // Set current wallpaper
-    let current_index = get_current_wallpaper_idx(&times)?;
-    desktop_envt.set_wallpaper(&walls[current_index])?;
-
-    let mut scheduler = Scheduler::new();
-    for (time, wall) in times.into_iter().zip(walls) {
-        scheduler
-            .every(1.day())
-            .at(&time)
-            .run(move || desktop_envt.set_wallpaper(&wall).unwrap());
-    }
+    // Create an instance of last_index pointing to None
+    let mut last_index = None;
+    println!("<--- Daemon Listening --->");
+    // This daemon checks every minute if the index of the wallpaper has changed
+    // If yes, then the new wallpaper is 
     loop {
-        scheduler.run_pending();
-        // Listens every minute
-        thread::sleep(Duration::from_secs(60));
+        // Getting the current wallpaper's index
+        let current_index = get_current_wallpaper_idx(&times)?;
+        if Some(current_index) != last_index {
+            // Updating last_index to the current_index
+            last_index = Some(current_index);
+            // Set current wallpaper
+            desktop_envt.set_wallpaper(&walls[current_index])?;
+        }
+        // Check every t seconds
+        // Change this if you would like a more accurate daemon
+        let t = 60;
+        thread::sleep(Duration::from_secs(t));
     }
 }
 
