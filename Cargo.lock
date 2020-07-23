@@ -139,15 +139,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "clokwerk"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "705530849622d83d6028de6491520e8b00fccd26309e5df63295686d95465500"
-dependencies = [
- "chrono",
-]
-
-[[package]]
 name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -252,11 +243,10 @@ dependencies = [
 
 [[package]]
 name = "flowy"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "chrono",
  "clap",
- "clokwerk",
  "directories-next",
  "enquote",
  "flate2",
