@@ -18,16 +18,38 @@
 * Flowy comes with a preset ```lake``` set of wallpapers. See the binary section for more information.
 * Flowy can also change the wallpapers based on **sunrise** and **sunset** timings of your location. See the Solar section for more information.
 
-### Binary - Recommended
+### Binary
 * It can be either found in the Releases section or can be installed using Cargo by running the command ```cargo install flowy```.
 * If you use the binary, just run it by typing ```flowy -d``` or ```flowy --dir \path\to\wallpapers``` to set the path to the wallpaper directory.
 * In case you want to use the preset wallpapers, run ```flowy --preset lake``` or ```flowy -p lake```. This downloads the Lakeside wallpapers made by Louis Coyle. They can also be found [here](https://bucket-more.s3.ap-south-1.amazonaws.com/uploads/lake.tar.gz).
-* If you're using Linux, you can either let the binary run forever in a terminal session or setup a ```systemd``` service so it listens in the background. The Debian package does this automatically for you.
+* If you're using Linux, you can let the binary run forever in a terminal session or setup a ```systemd``` service so it listens in the background. Checkout the 'Systemd Automation' section for more details.
 
-### Debian package
+### Systemd Automation (Linux only)
+* Instead of letting flowy run in an open terminal, it can be run as a background service.
+* Create a file called ```flowy.service``` and place it in ```/etc/systemd/user```
+* Populate this file with the following contents - 
+```
+[Unit]
+Description=flowy
+
+[Service]
+Environment=XDG_CURRENT_DESKTOP=<value>
+ExecStart=<command>
+
+[Install]
+WantedBy=multi-user.target
+```
+* Here, replace the variable ```<value>``` with the value of your current Desktop Environment and replace the variable ```<command>``` with whatever mode you would flowy to run in (you should ignore the phrase ```flowy``` while setting the variable ```<command>```).
+* Your current Desktop Environment can be found by running the command ```echo $XDG_CURRENT_DESKTOP```.
+* After this, one can just run flowy by running the command ```systemctl --user start flowy.service```.
+* You can track flowy's status using the command ```systemctl --user status flowy.service```.
+
+### Debian Package
+* This release has been deprecated.
+<!-- ### Debian package
 * If you use the Debian package, then it will install flowy as a ```systemd``` service. During installation, flowy will ask you your directory.
 * Once the installation is done, run the command ```systemctl --user start flowy.service``` to run the application.
-* Once installation is done and you would still like to change the directory, go to the systemd service file found at ```/etc/systemd/user``` and change the directory in that file.
+* Once installation is done and you would still like to change the directory, go to the systemd service file found at ```/etc/systemd/user``` and change the directory in that file. -->
 
 ## Wallpapers directory
 * The wallpapers inside the directory must be named sequentially.
