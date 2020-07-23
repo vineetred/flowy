@@ -57,7 +57,7 @@
 * Deepin
 * XFCE
 * KDE
-* BSPWM (with feh)
+* BSPWM and i3 (with feh)
 * **Windows** 7/8/10
 
 **TODO**
