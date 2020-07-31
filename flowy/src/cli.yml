@@ -1,5 +1,5 @@
 name: flowy
-version: "0.3.2"
+version: "0.3.3"
 author: Vineet Reddy <vineetreddy@live.com>
 about: Changes wallpaper dynamically
 settings: ArgRequiredElseHelp
