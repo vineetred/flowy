@@ -13,7 +13,7 @@ exclude = ["demo.gif", "demo2.gif"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-wallpaper_rs = { version = "0.1.0", path = "../wallpaper_rs" }
+wallpaper_rs = { version = "0.1.1", path = "../wallpaper_rs" }
 enquote = "1.0.3"
 toml = "0.5"
 serde = { version = "1.0.114", features = ["derive"] }
