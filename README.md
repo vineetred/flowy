@@ -12,6 +12,9 @@
   <img src="https://github.com/vineetred/flowy/blob/master/demo/demo.gif?raw=true" alt="Flowy demo"/>
 </p>
 
+## Current Status
+* Due to my busy schedule, I've not been updating flowy as much. However, I haven't abandonded the project, just that time is scarce. If anyone wants to contribute, please do so! It helps flowy as well as the community. 
+
 ## Usage
 * The documentation can be found at https://docs.rs/flowy.
 * You can either download the binary or get the Debian package.
