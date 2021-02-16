@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/vineetred/nGram/vineetred-patch-1/isolated-monochrome-black.svg" width="20%"> </img>
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![crates.io](https://img.shields.io/crates/v/flowy.svg)](https://crates.io/crates/flowy) [![CI](https://github.com/vineetred/flowy/workflows/CI/badge.svg?branch=master)](https://github.com/vineetred/flowy/actions)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) ![crates.io](https://img.shields.io/crates/v/flowy.svg) ![CI](https://github.com/vineetred/flowy/workflows/CI/badge.svg?branch=master)
 
 
 ## Demo
@@ -11,9 +11,6 @@
 <p align="center">
   <img src="https://github.com/vineetred/flowy/blob/master/demo/demo.gif?raw=true" alt="Flowy demo"/>
 </p>
-
-## Current Status
-* Due to my busy schedule, I've not been updating flowy as much. However, I haven't abandonded the project, just that time is scarce. If anyone wants to contribute, please do so! It helps flowy as well as the community. 
 
 ## Usage
 * The documentation can be found at https://docs.rs/flowy.
@@ -58,6 +55,7 @@ WantedBy=multi-user.target
 * The wallpapers inside the directory must be named sequentially.
 * For example, if you have 11 wallpapers, the names must be ```paper-01.jpg, paper-02.jpg...```.
 * It does not matter what the names of the files are as long as they are sequential.
+* Ensure that no matter which OS you are running flowy on, stick to quoted UNIX notation when providing the directory.
 
 ## Solar - Sunrise and Sunset
 * Flowy can take into account your location's sunrise and sunset timings.
@@ -71,11 +69,11 @@ WantedBy=multi-user.target
 
   The location of the config directory depends on your operating system:
   * `~/.config/flowy` on Linux
-  * `C:\User\Alice\AppData\Roaming\flowy` on Windows
+  * `C:\User\Alice\AppData\Roaming\flowy` on Windows (Windows is not supported ATM)
   * `/Users/Alice/Library/Preferences/flowy` on macOS
 
 ## Supported Environments
-* **macOS**
+* **macOS** - Apple Silicon and Intel based chips
 * **GNOME Based** - Ubuntu, Fedora, Pantheon
 * Linux Mint Cinnamon
 * Linux Mint MATE
