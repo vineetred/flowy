@@ -7,7 +7,7 @@ use tar::Archive;
 /// Downloads a given file
 pub fn get_file(path: &Path, url: &str) -> Result<(), Box<dyn Error>> {
     println!("GET file");
-    let res = ureq::get(url).call();
+    let res = ureq::get(url).call()?;
     println!("Status: {}", res.status());
     let mut reader = res.into_reader();
     let mut out = File::create(path).expect("Failed to create file");

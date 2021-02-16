@@ -19,7 +19,7 @@ enquote = "1.0.3"
 winapi = { version = "0.3.9", features = ["winuser"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-dirs-next = "1.0"
+dirs-next = "2.0.0"
 
 [[example]]
 name = "get_wallpaper"

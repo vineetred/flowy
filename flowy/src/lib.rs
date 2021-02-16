@@ -58,7 +58,9 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
     }
 
     if cfg!(target_os = "macos") {
-        files = files.into_iter().collect();
+        files = files.into_iter()
+        .filter(|y| y.contains(solar_filter))
+        .collect();
     }
     // The read_dir iterator returns in an arbitrary manner
     // Sorted so that the images are viewed at the right time
@@ -87,9 +89,9 @@ pub fn generate_config_solar(path: &Path, lat: f64, long: f64) -> Result<(), Box
     // Night length in seconds
     let night_len = (86400 - day_len) % 86400;
     // Offset in seconds for each wallpaper change during the day
-    let day_div = day_len / day_walls.len() as i64;
+    let day_div = day_len / (day_walls.len()) as i64;
     // Offset in seconds for each wallpaper change during the night
-    let night_div = night_len / night_walls.len() as i64;
+    let night_div = night_len / (night_walls.len()) as i64;
     let mut times = Vec::new();
 
     // Adding times and paths
