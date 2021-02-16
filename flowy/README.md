@@ -55,6 +55,7 @@ WantedBy=multi-user.target
 * The wallpapers inside the directory must be named sequentially.
 * For example, if you have 11 wallpapers, the names must be ```paper-01.jpg, paper-02.jpg...```.
 * It does not matter what the names of the files are as long as they are sequential.
+* Ensure that no matter which OS you are running flowy on, stick to quoted UNIX notation when providing the directory.
 
 ## Solar - Sunrise and Sunset
 * Flowy can take into account your location's sunrise and sunset timings.
@@ -72,7 +73,7 @@ WantedBy=multi-user.target
   * `/Users/Alice/Library/Preferences/flowy` on macOS
 
 ## Supported Environments
-* **macOS**
+* **macOS** - Apple Silicon and Intel based chips
 * **GNOME Based** - Ubuntu, Fedora, Pantheon
 * Linux Mint Cinnamon
 * Linux Mint MATE
