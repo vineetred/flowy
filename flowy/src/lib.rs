@@ -46,6 +46,7 @@ pub fn get_dir(path: &Path, solar_filter: &str) -> Result<Vec<String>, Box<dyn E
     let mut files: Vec<String> = std::fs::read_dir(path)?
         .into_iter()
         .map(|x| x.unwrap().path().display().to_string())
+        .filter(|y| y.contains(solar_filter))
         .collect();
 
     // Appens file:// to the start of each item
