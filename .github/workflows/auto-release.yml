@@ -52,12 +52,11 @@ jobs:
     needs: [build-linux-gnu, release-macos, release-windows]
     steps:
     - uses: actions/download-artifact@v2.0.8
-    - run: ls
     - uses: anton-yurchenko/git-release@v3.4.3
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         args: |
-              flowy_linux_gnu.zip
-              flowy_macos.zip
-              flowy_windows.zip
+              flowy_linux_gnu/flowy_linux_gnu.zip
+              flowy_macos/flowy_macos.zip
+              flowy_windows/flowy_windows.zip
