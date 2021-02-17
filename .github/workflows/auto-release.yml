@@ -35,7 +35,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: cargo build --release
-    - run: zip flowy_windows.zip target/release/flowy.exe
+    - name: Upload a Build Artifact
+    - uses: actions/upload-artifact@v2.2.2
+      with:
+        name: flowy_windows
+        path: target/release/flowy
+    - uses: actions/download-artifact@v2.0.8
+      with:
+        name: flowy_windows
         
   publish-release:
     name: Publish release
