@@ -1,6 +1,6 @@
-## [0.4.1] - 2021-02-16
+## [0.4.2] - 2021-02-16
 ### Added
-- Automated build release on GitHub
+- Automated build release on GitHub.
 
 ## [0.4.0] - 2021-02-16
 ### Added
