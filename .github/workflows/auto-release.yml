@@ -38,7 +38,7 @@ jobs:
     - uses: actions/upload-artifact@v2.2.2
       with:
         name: flowy_windows
-        path: target/release/flowy
+        path: target/release/flowy.exe
     - uses: actions/download-artifact@v2.0.8
       with:
         name: flowy_windows
