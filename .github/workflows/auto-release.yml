@@ -4,36 +4,30 @@ on:
   push:
     branches: [ master ]
     tags:
-      - release-v*
+      - v*
     
   pull_request:
     branches: [ master ]
     tags:
-      - release-v*
+      - v*
 
 jobs:
   build-linux-gnu:
-    name: Build for linux/GNU 
+    name: Build for Linux/GNU 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - run: rustup target add x86_64-unknown-linux-gnu
     - run: cargo build --release --target=x86_64-unknown-linux-gnu
-    - uses: actions/upload-artifact@v1
-      with:
-        name: flowy_linux_gnu
-        path: target/release-linux/flowy
-
+    - run: zip flowy_linux_gnu.zip target/x86_64-unknown-linux-gnu/release/flowy
+        
   release-macos:
     name: Build for macOS
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - run: cargo build --release
-    - uses: actions/upload-artifact@v1
-      with:
-        name: flowy_macos
-        path: target/release/flowy
+    - run: zip flowy_macos.zip target/release/flowy
 
   release-windows:
     name: Build for Windows
@@ -41,17 +35,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: cargo build --release
-    - uses: actions/upload-artifact@v1
-      with:
-        name: flowy_windows
-        path: target/release/flowy.exe
+    - run: zip flowy_windows.zip target/release/flowy.exe
         
-  push-to-releases:
-     runs-on: ubuntu-latest
-     steps:
-       - uses: GoogleCloudPlatform/release-please-action@v1.3.0
-         with:
-           token: ${{ secrets.GITHUB_TOKEN }}
-           path: target/release
-           release-type: rust
-           package-name: release-please-action
+  publish-release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: [build-linux-gnu, release-macos, release-windows]
+    steps:
+    - uses: anton-yurchenko/git-release@v3.4.3
+      with:
+        args: |
+              flowy_linux_gnu.zip
+              flowy_macos.zip
+              flowy_windows.zip
