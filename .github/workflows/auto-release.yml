@@ -1,0 +1,68 @@
+name: Publish binaries to Releases
+
+on:
+  push:
+    tags:
+      - '*'
+    
+  pull_request:
+    tags:
+      - '*'
+
+jobs:
+  build-linux-gnu:
+    name: Build for Linux/GNU 
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: rustup target add x86_64-unknown-linux-gnu
+    - run: cargo build --release --target=x86_64-unknown-linux-gnu
+    - uses: actions/upload-artifact@v1
+      with:
+        name: flowy_linux_gnu
+        path: target/x86_64-unknown-linux-gnu/release/flowy
+        
+  release-macos:
+    name: Build for macOS
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: cargo build --release
+    - uses: actions/upload-artifact@v1
+      with:
+        name: flowy_macos
+        path: target/release/flowy
+
+  release-windows:
+    name: Build for Windows
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: cargo build --release
+    - uses: actions/upload-artifact@v2.2.2
+      with:
+        name: flowy_windows
+        path: target/release/flowy.exe
+        
+  publish-release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: [build-linux-gnu, release-macos, release-windows]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2.0.8
+    - run: zip flowy_linux_gnu.zip flowy_linux_gnu/flowy
+    - run: zip flowy_macos.zip flowy_macos/flowy
+    - run: zip flowy_windows.zip flowy_windows/flowy.exe
+    - uses: docker://antonyurchenko/git-release:latest
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_RELEASE: "false"
+          PRE_RELEASE: "false"
+          CHANGELOG_FILE: "CHANGELOG.md"
+          ALLOW_EMPTY_CHANGELOG: "true"
+      with:
+        args: |
+              flowy_linux_gnu.zip
+              flowy_macos.zip
+              flowy_windows.zip
