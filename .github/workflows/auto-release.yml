@@ -56,13 +56,13 @@ jobs:
     - run: zip flowy_linux_gnu.zip flowy_linux_gnu/flowy
     - run: zip flowy_macos.zip flowy_macos/flowy
     - run: zip flowy_windows.zip flowy_windows/flowy.exe
-    - uses: anton-yurchenko/git-release@v3.4.3
+    - uses: docker://antonyurchenko/git-release:latest
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRAFT_RELEASE: "false"
           PRE_RELEASE: "false"
           CHANGELOG_FILE: "CHANGELOG.md"
-          ALLOW_EMPTY_CHANGELOG: "false"
+          ALLOW_EMPTY_CHANGELOG: "true"
       with:
         args: |
               flowy_linux_gnu.zip
