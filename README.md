@@ -81,7 +81,7 @@ WantedBy=multi-user.target
 * XFCE
 * KDE
 * BSPWM and i3 (with feh)
-* **Windows** 7/8/10
+* **Windows** 7/8/10/11
 
 **TODO**
 * GUI
