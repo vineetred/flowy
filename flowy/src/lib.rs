@@ -178,7 +178,9 @@ pub fn set_times(config: Config) -> Result<(), Box<dyn Error>> {
             // Updating last_index to the current_index
             last_index = Some(current_index);
             // Set current wallpaper
-            desktop_envt.set_wallpaper(&walls[current_index])?;
+            let wall = &walls[current_index];
+            println!("Set wallpaper: {:?} = {:?}", times[current_index], wall);
+            desktop_envt.set_wallpaper(wall)?;
         }
         // Check every t seconds
         // Change this if you would like a more accurate daemon
