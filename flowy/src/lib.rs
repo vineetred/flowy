@@ -160,8 +160,10 @@ fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
 pub fn set_times(config: Config) -> Result<(), Box<dyn Error>> {
     let walls = config.walls;
     let times = config.times;
-    println!("Times - {:#?}", &times);
-    println!("Paths - {:#?}", &walls);
+    println!("Wallpapers:");
+    for i in 0..times.len() {
+        println!("- {:?} = {:?}", times[i], &walls[i]);
+    }
     // Will throw an error if Desktop Envt is not supported
     let desktop_envt = DesktopEnvt::new().expect("Desktop envt could not be determined");
     // Create an instance of last_index pointing to None
