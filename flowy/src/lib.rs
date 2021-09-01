@@ -201,20 +201,17 @@ fn get_current_wallpaper_idx(wall_times: &[String]) -> Result<usize, Box<dyn Err
     let curr_time = Local::now().time();
 
     // Looping through times to compare all of them
-    let mut index = 0;
-    for time in wall_times {
-        let time = NaiveTime::parse_from_str(&time, "%H:%M")?;
-        if time > curr_time {
-            break;
+    for i in 0..(wall_times.len() - 1) {
+        let time = NaiveTime::parse_from_str(&wall_times[i], "%H:%M")?;
+        let next_time = NaiveTime::parse_from_str(&wall_times[i + 1], "%H:%M")?;
+        let mut matches = 0;
+        if curr_time >= time { matches += 1; }
+        if curr_time < next_time { matches += 1; }
+        if time > next_time { matches += 1; }
+        if matches >= 2 {
+            return Ok(i);
         }
-        index += 1;
     }
 
-    // In case the current time is lower that the first time,
-    // we just loop back to the time before it
-    if index == 0 {
-        index = wall_times.len() - 1;
-        return Ok(index);
-    }
-    Ok(index - 1)
+    return Ok(wall_times.len() - 1);
 }
