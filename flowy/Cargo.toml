@@ -19,7 +19,7 @@ toml = "0.5"
 serde = { version = "1.0.114", features = ["derive"] }
 clap = { version = "3.0.0-beta.1", features = ["yaml"] }
 flate2 = "1.0.16"
-tar = "0.4.29"
+tar = "0.4.36"
 directories-next = "2.0.0"
 chrono = "0.4"
 ureq = { version = "2.0.1", features = ["json"] }
