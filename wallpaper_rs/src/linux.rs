@@ -1,6 +1,7 @@
 use super::Desktop;
 use std::error::Error;
 use std::io::BufRead;
+use which::which;
 use std::path::PathBuf;
 use std::process::Command;
 
@@ -138,7 +139,19 @@ impl Desktop for DesktopEnvt {
                     &path
                 );
 
-                Command::new("qdbus")
+                let which_qdbus = which("qdbus");
+                
+                if which_qdbus.is_ok() {
+                    Command::new("qdbus")
+                        .args(&[
+                            "org.kde.plasmashell",
+                            "/PlasmaShell",
+                            "org.kde.PlasmaShell.evaluateScript",
+                            &kde_set_arg,
+                        ])
+                        .output()?;
+                } else {
+                    Command::new("qdbus-qt5")
                     .args(&[
                         "org.kde.plasmashell",
                         "/PlasmaShell",
@@ -146,6 +159,7 @@ impl Desktop for DesktopEnvt {
                         &kde_set_arg,
                     ])
                     .output()?;
+                }
             }
 
             DesktopEnvt::BSPWM | DesktopEnvt::I3 => {
